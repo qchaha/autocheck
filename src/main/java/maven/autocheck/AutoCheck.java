@@ -64,7 +64,7 @@ public class AutoCheck{
             sess.execCommand(cmd);
 
             /*
-             * This basic example does not handle stderr, which is sometimes dangerous
+             * This basic example does not handle stderr, which is sometimes dangerous 
              * (please read the FAQ).
              */
 
