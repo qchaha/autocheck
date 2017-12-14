@@ -22,7 +22,7 @@ import java.util.regex.*;
 public class AutoCheck{
   public static void main(String[] args )
   {
-        String a = rmt_shell("192.168.197.151","root","root123","df -h");
+        String a = rmt_shell("192.168.197.151","root","root123","date");
         System.out.println(a);
   }
 
@@ -64,7 +64,7 @@ public class AutoCheck{
             sess.execCommand(cmd);
 
             /*
-             * This basic example does not handle stderr, which is sometimes dangerous 
+             * This basic example does not handle stderr, which is sometimes dangerous
              * (please read the FAQ).
              */
 
