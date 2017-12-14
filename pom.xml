@@ -39,5 +39,10 @@
             <version>4.10</version>
             <scope>test</scope>
        </dependency>
+       <dependency>
+            <groupId>ch.ethz.ssh2</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>1.0</version>
+       </dependency>
     </dependencies>
 </project>
