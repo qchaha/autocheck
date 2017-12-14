@@ -5,4 +5,9 @@ public class AutoCheck{
   {
         System.out.println("hello autocheck");
   }
+
+  public static void test1()
+  {
+        System.out.println("this is a test!");  
+  }
 }
