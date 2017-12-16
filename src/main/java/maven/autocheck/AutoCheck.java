@@ -19,19 +19,21 @@ import java.security.MessageDigest;
 import java.net.*;
 import java.util.regex.*;
 
+
+
 public class AutoCheck{
-  public static void main(String[] args )
-  {
-        String a = rmt_shell("192.168.197.151","root","root123","date");
+    public static void main(String[] args )
+    {
+        String a = rmt_shell("192.168.197.151","root","root123","date;hostname;df -h");
         System.out.println(a);
-  }
+    }
 
-  public static void test1()
-  {
-        System.out.println("this is a test!");
-  }
+    public static String f_date()
+    {
+        return "ff";
+    }
 
-  //远程调用shell
+    //远程调用shell
     public static String rmt_shell(String ip, String username, String password, String cmd)
     {
         String re = null;
