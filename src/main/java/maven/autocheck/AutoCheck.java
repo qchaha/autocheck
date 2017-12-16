@@ -24,7 +24,7 @@ import java.util.regex.*;
 public class AutoCheck{
     public static void main(String[] args )
     {
-        String s_cmd = "cat <<EOF >tmp/.shell.sh /n #!/bin/sh /n echo "<tag:date>" /n date /n echo "<tag:hostname>" /n hostname /n echo "<tag:uname -a>" /n uname -a /n EOF ;sh /tmp/.shell.sh";
+        String s_cmd = "cat <<EOF >tmp/.shell.sh /n #!/bin/sh /n echo '<tag:date>' /n date /n echo '<tag:hostname>' /n hostname /n echo '<tag:uname -a>' /n uname -a /n EOF ;sh /tmp/.shell.sh";
         String a = rmt_shell("192.168.197.151","root","root123",s_cmd);
         System.out.println(a);
     }
