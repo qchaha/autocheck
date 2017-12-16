@@ -29,6 +29,7 @@ public class AutoCheck{
                        "echo \"echo '#<tag:hostname>'\" >> test.sh;echo hostname >> test.sh;" +
                        "echo \"echo '#<tag:uname -a>'\" >>test.sh; echo 'uname -a'>>test.sh;" +
                        "echo \"echo '#<tag:cpuinfo>'\" >> test.sh; echo cpu_count='$(cat /proc/cpuinfo | grep processor | wc -l)' >> test.sh;echo cpu_model='$(cat /proc/cpuinfo | grep name | sed -n \"1p\")' >> test.sh;echo 'echo ${cpu_count} X ${cpu_model#*: }' >> test.sh;" +
+                       "echo \"echo '#<tag:free>'\" >> test.sh;echo 'free -m' >> test.sh;" +
                        "sh test.sh";
         String a = rmt_shell("192.168.197.151","root","root123",s_cmd);
         System.out.println(a);
