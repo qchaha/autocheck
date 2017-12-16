@@ -24,8 +24,11 @@ import java.util.regex.*;
 public class AutoCheck{
     public static void main(String[] args )
     {
-        String s_cmd = "echo '#!/bin/sh' > test.sh;echo" +
-                       "\"echo '#<tag:date>'\" >> test.sh;echo date >> test.sh;echo \"echo '#<tag:hostname>'\" >> test.sh;echo hostname >> test.sh;echo \"echo '#<tag:uname -a>'\" >>test.sh; echo 'uname -a'>>test.sh;sh test.sh";
+        String s_cmd = "echo '#!/bin/sh' > test.sh;" +
+                       "echo \"echo '#<tag:date>'\" >> test.sh; echo date >> test.sh;" +
+                       "echo \"echo '#<tag:hostname>'\" >> test.sh;echo hostname >> test.sh;" +
+                       "echo \"echo '#<tag:uname -a>'\" >>test.sh; echo 'uname -a'>>test.sh;" +
+                       "sh test.sh";
         String a = rmt_shell("192.168.197.151","root","root123",s_cmd);
         System.out.println(a);
     }
