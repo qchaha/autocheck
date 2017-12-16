@@ -24,7 +24,8 @@ import java.util.regex.*;
 public class AutoCheck{
     public static void main(String[] args )
     {
-        String a = rmt_shell("192.168.197.151","root","root123","date;hostname;df -h");
+        String a = rmt_shell("192.168.197.151","root","root123","date;
+                                                                 hostname;df -h");
         System.out.println(a);
     }
 
