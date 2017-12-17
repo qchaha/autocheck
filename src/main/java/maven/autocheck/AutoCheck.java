@@ -33,7 +33,7 @@ public class AutoCheck{
                        "echo \"echo '#<tag:df>'\" >> test.sh; echo 'df -h' >> test.sh;" +
                        "echo \"echo '#<tag:vmstat>'\" >> test.sh; echo 'vmstat 1 5' >> test.sh;" +
                        "echo \"echo '#<tag:lsnrctl>'\" >> test.sh;echo 'su - oracle -c \"lsnrctl status\"' >> test.sh;" +
-                       "echo tff >> test.sh;"
+                       "echo tff >> test.sh;" + 
                        "sh test.sh";
         String a = rmt_shell("192.168.197.113","root","root123",s_cmd);
         System.out.println(a);
