@@ -103,7 +103,7 @@ public class AutoCheck{
 
             /* Show exit status, if available (otherwise "null") */
 
-            //System.out.println("ExitCode: " + sess.getExitStatus());
+            System.out.println("ExitCode: " + sess.getExitStatus());
 
             /* Close this session */
 
