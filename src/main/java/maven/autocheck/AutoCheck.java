@@ -199,7 +199,7 @@ public class AutoCheck{
                        "echo 'END;' >> /home/oracle/creawr.sql;" +
                        "echo '/' >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT output FROM TABLE (DBMS_WORKLOAD_REPOSITORY.awr_report_text(:dbid,:inst_num,:bid,:eid));' >> /home/oracle/creawr.sql;" +
-                       "echo 'SPOOL OFF'" +
+                       "echo 'SPOOL OFF';" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
                        "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\"";
