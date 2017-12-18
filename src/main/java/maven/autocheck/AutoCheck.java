@@ -143,7 +143,24 @@ public class AutoCheck{
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:dba_role>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
-                            "echo \"select * from dba_role_privs where granted_role = 'DBA';\" >> /home/oracle/dbcheck.sql;" +                     
+                            "echo \"select * from dba_role_privs where granted_role = 'DBA';\" >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:database_size>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select to_char(sum(bytes/1024/1024/1024),'9999999999.99') db_sizeG from dba_segments;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col name for a60' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col sizeM for 9999999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:datafile_info>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select name,status,bytes/1024/1024 sizeM from v$datafile;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:rman_info>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select  start_time, end_time, operation, output_bytes, status from v$rman_status order by end_time;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
