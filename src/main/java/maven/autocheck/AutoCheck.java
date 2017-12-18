@@ -45,6 +45,7 @@ public class AutoCheck{
                              "echo 'select ''#<tag:datafile_info>'' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo 'select name,bytes/1024/1024 sizeM,status from v$datafile;' >> /home/oracle/test.sql;" +
+                             "echo 'exit' >> test.sql" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
         System.out.println(a);
