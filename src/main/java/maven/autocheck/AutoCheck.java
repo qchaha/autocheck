@@ -69,10 +69,10 @@ public class AutoCheck{
                              "echo 'exit' >> /tmp/.inscheck.sql;" +
                              "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\";";
 
-        String s_db_check = "echo 'set echo off' > /home/oracle/dbcheck.sql" +
-                            "echo 'set feedback off' >> /home/oracle/dbcheck.sql" +
-                            "echo 'set linesize 999 pagesize 50000' >> /home/oracle/dbcheck.sql" +
-                            "echo 'col tag for a40' >> /home/oracle/dbcheck.sql" +
+        String s_db_check = "echo 'set echo off' > /home/oracle/dbcheck.sql;" +
+                            "echo 'set feedback off' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set linesize 999 pagesize 50000' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col tag for a40' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
