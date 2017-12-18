@@ -80,9 +80,28 @@ public class AutoCheck{
                             "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:ctrl_file_info>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select name from v$controlfile;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col member for a80' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col status for a20' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col group# for 999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col thread# for 999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col sizeM for 99999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col members for 99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col status for a9' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:log_info>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select group#,status,type,member from v$logfile;' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select group#,thread#,sequence#,bytes/1024/1024 sizeM,members,archived,status,first_change#,first_time from v$log;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
