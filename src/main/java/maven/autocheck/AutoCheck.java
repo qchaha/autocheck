@@ -34,9 +34,19 @@ public class AutoCheck{
                            "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
                            "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
                            "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
-                           "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh";
-        String s_ins_check = "";
-        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck);
+                           "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
+        String s_ins_check = "echo 'set echo off' > /home/oracle/test.sql;" +
+                             "echo 'set feedback off' >> /home/oracle/test.sql;" +
+                             "echo 'set linesize 999 pagesize 9999' >> /home/oracle/test.sql;" +
+                             "echo 'col name for a60' >> /home/oracle/test.sql;" +
+                             "echo 'col tag for a40' >> /home/oracle/test.sql;" +
+                             "echo 'col status for a40' >> /home/oracle/test.sql;" +
+                             "echo 'set heading off' >> /home/oracle/test.sql;" +
+                             "echo 'select ''#<tag:datafile_info>'' tag from dual;' >> /home/oracle/test.sql;" + 
+                             "echo 'set heading on' >> /home/oracle/test.sql;" +
+                             "echo 'select name,bytes/1024/1024 sizeM,status from v$datafile;' >> /home/oracle/test.sql;" +
+                             "chmod 777 /home/oracle/test.sql;su - oracle -c "sqlplus -S / as sysdba @/home/oracle/test.sql"";
+        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
         System.out.println(a);
     }
 
