@@ -175,7 +175,7 @@ public class AutoCheck{
                             "echo 'select * from (SELECT df.tablespace_name ts_name, df.file_name fname, fs.phyrds phyrds, (fs.phyrds * 100) / (fst.pr + tst.pr)  read_pct, fs.phywrts phywrts, (fs.phywrts * 100) / (fst.pw + tst.pw)   write_pct FROM sys.dba_data_files df , v$filestat fs , (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE df.file_id = fs.file# UNION SELECT tf.tablespace_name ts_name, tf.file_name fname, ts.phyrds phyrds,(ts.phyrds * 100) / (fst.pr + tst.pr)  read_pct, ts.phywrts  phywrts, (ts.phywrts * 100) / (fst.pw + tst.pw) write_pct FROM sys.dba_temp_files  tf, v$tempstat  ts, (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE tf.file_id = ts.file# ORDER BY phyrds DESC) where rownum < 10 ;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
-                            "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
+                            "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\";";
 
         String s_awr = "echo \"SPOOL /home/oracle/awr.txt\" > /home/oracle/creawr.sql;" +
                        "echo 'SET ECHO OFF' >> /home/oracle/creawr.sql;" +
