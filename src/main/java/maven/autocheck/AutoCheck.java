@@ -57,12 +57,12 @@ public class AutoCheck{
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:nondefault-para>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select name,value from v$parameter where isdefault != '''TRUE'';' >> /home/oracle/test.sql;" +
+                             "echo \"select name,value from v$parameter where isdefault != 'TRUE';\" >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:log_switchcount>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select to_char (first_time, ''yyyy-mm-dd'') day,count (recid) count_number,count (recid) * 200 size_mb from v$log_history group by to_char (first_time, ''yyyy-mm-dd'') order by 1;' >> /home/oracle/test.sql;" +
+                             "echo \"select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1;\" >> /home/oracle/test.sql;" +
 
                              "echo 'exit' >> /home/oracle/test.sql;" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
