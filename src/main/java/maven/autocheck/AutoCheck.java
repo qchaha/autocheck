@@ -199,7 +199,7 @@ public class AutoCheck{
                        "echo '/' >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT output FROM TABLE (DBMS_WORKLOAD_REPOSITORY.awr_report_text(:dbid,:inst_num,:bid,:eid));' >> /home/oracle/creawr.sql;" +
 
-                       "echo 'exit' >> /home/oracle/creawr.sql;"; +
+                       "echo 'exit' >> /home/oracle/creawr.sql;" +
                        "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\"";
 
         String a = rmt_shell("192.168.197.113","root","root123",/*s_oscheck + s_ins_check + s_db_check + */s_awr);
