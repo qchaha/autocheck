@@ -38,9 +38,8 @@ public class AutoCheck{
         String s_ins_check = "echo 'set echo off' > /home/oracle/test.sql;" +
                              "echo 'set feedback off' >> /home/oracle/test.sql;" +
                              "echo 'set linesize 999 pagesize 9999' >> /home/oracle/test.sql;" +
-                             "echo 'col name for a60' >> /home/oracle/test.sql;" +
+                             "echo 'alter session set nls_date_format=''yyyy-mm-dd hh24:mi:ss'';' >> /home/oracle/test.sql;" +
                              "echo 'col tag for a40' >> /home/oracle/test.sql;" +
-                             "echo 'col status for a10' >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:ins_startup_time>' tag from dual;' >> /home/oracle/test.sql;" +
@@ -58,12 +57,12 @@ public class AutoCheck{
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:nondefault-para>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select name,value from v$parameter where isdefault != 'TRUE';' >> /home/oracle/test.sql;" +
+                             "echo 'select name,value from v$parameter where isdefault != '''TRUE'';' >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:log_switchcount>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1;' >> /home/oracle/test.sql;" +
+                             "echo 'select to_char (first_time, ''yyyy-mm-dd'') day,count (recid) count_number,count (recid) * 200 size_mb from v$log_history group by to_char (first_time, ''yyyy-mm-dd'') order by 1;' >> /home/oracle/test.sql;" +
 
                              "echo 'exit' >> /home/oracle/test.sql;" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
