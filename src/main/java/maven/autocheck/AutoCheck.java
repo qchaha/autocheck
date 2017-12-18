@@ -77,7 +77,7 @@ public class AutoCheck{
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
-                            "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;"
+                            "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
