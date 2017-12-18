@@ -24,18 +24,18 @@ import java.util.regex.*;
 public class AutoCheck{
     public static void main(String[] args )
     {
-        String s_cmd = "echo '#!/bin/sh' > test.sh;" +
-                       "echo \"echo '#<tag:date>'\" >> test.sh; echo date >> test.sh;" +
-                       "echo \"echo '#<tag:hostname>'\" >> test.sh; echo hostname >> test.sh;" +
-                       "echo \"echo '#<tag:uname -a>'\" >>test.sh; echo 'uname -a'>>test.sh;" +
-                       "echo \"echo '#<tag:cpuinfo>'\" >> test.sh; echo cpu_count='$(cat /proc/cpuinfo | grep processor | wc -l)' >> test.sh;echo cpu_model='$(cat /proc/cpuinfo | grep name | sed -n \"1p\")' >> test.sh;echo 'echo ${cpu_count} X ${cpu_model#*: }' >> test.sh;" +
-                       "echo \"echo '#<tag:free>'\" >> test.sh; echo 'free -m' >> test.sh;" +
-                       "echo \"echo '#<tag:df>'\" >> test.sh; echo 'df -h' >> test.sh;" +
-                       "echo \"echo '#<tag:vmstat>'\" >> test.sh; echo 'vmstat 1 5' >> test.sh;" +
-                       "echo \"echo '#<tag:lsnrctl>'\" >> test.sh;echo 'su - oracle -c \"lsnrctl status\"' >> test.sh;" +
-                       "echo tfff >> test.sh;echo e1ff >> test.sh;" +
-                       "sh test.sh";
-        String a = rmt_shell("192.168.197.113","root","root123",s_cmd);
+        String s_oscheck = "echo '#!/bin/sh' > /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:date>'\" >> /tmp/.oscheck.sh; echo date >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:hostname>'\" >> /tmp/.oscheck.sh; echo hostname >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:uname -a>'\" >>/tmp/.oscheck.sh; echo 'uname -a'>>/tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:cpuinfo>'\" >> /tmp/.oscheck.sh; echo cpu_count='$(cat /proc/cpuinfo | grep processor | wc -l)' >> /tmp/.oscheck.sh;echo cpu_model='$(cat /proc/cpuinfo | grep name | sed -n \"1p\")' >> /tmp/.oscheck.sh;echo 'echo ${cpu_count} X ${cpu_model#*: }' >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:free>'\" >> /tmp/.oscheck.sh; echo 'free -m' >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
+                       "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
+                       "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
+                       "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh";
+        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck);
         System.out.println(a);
     }
 
