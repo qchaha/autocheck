@@ -44,25 +44,25 @@ public class AutoCheck{
                              "echo 'col tag for a40' >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo 'select '#<tag:ins_startup_time>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo \"select '#<tag:ins_startup_time>' tag from dual;\" >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo 'select startup_time from v$instance;' >> /home/oracle/test.sql;" +
 
                              "echo 'col sizeM for 999999.99' >> /home/oracle/test.sql;" +
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo 'select '#<tag:sga_info>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo \"select '#<tag:sga_info>' tag from dual;\" >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo 'select item,sum(bytes/1024/1024)sizeM from (select decode(pool,NULL,name,pool) item ,bytes from v$sgastat) group by item;' >> /home/oracle/test.sql;" +
 
                              "echo 'col value for a50' >> /home/oracle/test.sql;" +
                              "echo 'col name for a30' >> /home/oracle/test.sql;" +
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo 'select '#<tag:nondefault-para>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo \"select '#<tag:nondefault-para>' tag from dual;\" >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo \"select name,value from v\\$parameter where isdefault != 'TRUE';\" >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo 'select '#<tag:log_switchcount>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /home/oracle/test.sql;" +
 
