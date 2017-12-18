@@ -40,7 +40,7 @@ public class AutoCheck{
                              "echo 'set linesize 999 pagesize 9999' >> /home/oracle/test.sql;" +
                              "echo 'col name for a60' >> /home/oracle/test.sql;" +
                              "echo 'col tag for a40' >> /home/oracle/test.sql;" +
-                             "echo 'col status for a40' >> /home/oracle/test.sql;" +
+                             "echo 'col status for a10' >> /home/oracle/test.sql;" +
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select ''#<tag:datafile_info>'' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
