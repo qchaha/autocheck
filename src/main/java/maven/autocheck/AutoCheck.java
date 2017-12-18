@@ -177,7 +177,8 @@ public class AutoCheck{
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
 
-        String s_awr = "echo 'SET ECHO OFF' > /home/oracle/creawr.sql;" +
+        String s_awr = "echo 'SPOOL /home/oracle/awr.txt'" +
+                       "echo 'SET ECHO OFF' > /home/oracle/creawr.sql;" +
                        "echo 'SET VERI OFF' >> /home/oracle/creawr.sql;" +
                        "echo 'SET FEEDBACK OFF' >> /home/oracle/creawr.sql;" +
                        "echo 'SET TERMOUT ON' >> /home/oracle/creawr.sql;" +
@@ -198,11 +199,12 @@ public class AutoCheck{
                        "echo 'END;' >> /home/oracle/creawr.sql;" +
                        "echo '/' >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT output FROM TABLE (DBMS_WORKLOAD_REPOSITORY.awr_report_text(:dbid,:inst_num,:bid,:eid));' >> /home/oracle/creawr.sql;" +
+                       "echo 'SPOOL OFF'" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
                        "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\"";
 
-        String a = rmt_shell("192.168.197.113","root","root123",/*s_oscheck + s_ins_check + s_db_check + */s_awr);
+        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
     }
 
