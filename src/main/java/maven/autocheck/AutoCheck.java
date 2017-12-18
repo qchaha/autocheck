@@ -33,8 +33,10 @@ public class AutoCheck{
                            "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
                            "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
                            "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
+                           "echo \"echo '#<tag:opath>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
                            "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
                            "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
+
         String s_ins_check = "echo 'set echo off' > /home/oracle/test.sql;" +
                              "echo 'set feedback off' >> /home/oracle/test.sql;" +
                              "echo 'set linesize 999 pagesize 9999' >> /home/oracle/test.sql;" +
@@ -62,7 +64,7 @@ public class AutoCheck{
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select '#<tag:log_switchcount>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo \"select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1;\" >> /home/oracle/test.sql;" +
+                             "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /home/oracle/test.sql;" +
 
                              "echo 'exit' >> /home/oracle/test.sql;" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
