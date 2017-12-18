@@ -105,10 +105,24 @@ public class AutoCheck{
                             "echo 'select group#,thread#,sequence#,bytes/1024/1024 sizeM,members,archived,status,first_change#,first_time from v$log;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'col tbs_name for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col tbs_sizeM for 9999999.99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col used_sizeM for 9999999.99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col free_sizeM for 9999999.99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col use_ratio for 99.99' >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:tbs_usage>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select a.a1 tbs_name,b.b2/1024/1024 tbs_sizeM,(b.b2-a.a2)/1024/1024 used_sizeM, a.a2/1024/1024 free_sizeM,substr((b.b2-a.a2)/b.b2*100,1,5) use_ratio from (select  tablespace_name a1, sum(nvl(bytes,0)) a2 from dba_free_space group by tablespace_name) a,(select tablespace_name b1,sum(bytes) b2 from dba_data_files group by tablespace_name) b,(select tablespace_name c1,contents c2,extent_management c3  from dba_tablespaces) c where a.a1=b.b1 and c.c1=b.b1;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col owner for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col original_name for a40' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col operation for 9999999999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col type for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col ts_name for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:recycle>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select owner,object_name,original_name,operation,type,ts_name,createtime,droptime from dba_recyclebin;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
