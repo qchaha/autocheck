@@ -43,10 +43,28 @@ public class AutoCheck{
                              "echo 'col status for a10' >> /home/oracle/test.sql;" +
 
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo 'select ''#<tag:datafile_info>'' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo 'select '#<tag:ins_startup_time>' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select name,bytes/1024/1024 sizeM,status from v$datafile;' >> /home/oracle/test.sql;" +
-                             
+                             "echo 'select startup_time from v$instance;' >> /home/oracle/test.sql;" +
+
+                             "echo 'col sizeM for 999999.99' >> /home/oracle/test.sql;" +
+                             "echo 'set heading off' >> /home/oracle/test.sql;" +
+                             "echo 'select '#<tag:sga_info>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo 'set heading on' >> /home/oracle/test.sql;" +
+                             "echo 'select item,sum(bytes/1024/1024)sizeM from (select decode(pool,NULL,name,pool) item ,bytes from v$sgastat) group by item;' >> /home/oracle/test.sql;" +
+
+                             "echo 'col value for a50' >> /home/oracle/test.sql;" +
+                             "echo 'col name for a30' >> /home/oracle/test.sql;" +
+                             "echo 'set heading off' >> /home/oracle/test.sql;" +
+                             "echo 'select '#<tag:nondefault-para>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo 'set heading on' >> /home/oracle/test.sql;" +
+                             "echo 'select name,value from v$parameter where isdefault != 'TRUE';' >> /home/oracle/test.sql;" +
+
+                             "echo 'set heading off' >> /home/oracle/test.sql;" +
+                             "echo 'select '#<tag:log_switchcount>' tag from dual;' >> /home/oracle/test.sql;" +
+                             "echo 'set heading on' >> /home/oracle/test.sql;" +
+                             "echo 'select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1;' >> /home/oracle/test.sql;" +
+
                              "echo 'exit' >> /home/oracle/test.sql;" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
