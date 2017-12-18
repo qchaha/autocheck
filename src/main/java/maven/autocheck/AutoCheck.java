@@ -202,7 +202,7 @@ public class AutoCheck{
                        "echo \"SPOOL OFF\" >> /home/oracle/creawr.sql;" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
-                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\&1; cat /home/oracle/awr.txt;";
+                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;";
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
