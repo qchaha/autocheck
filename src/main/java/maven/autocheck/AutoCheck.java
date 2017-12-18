@@ -39,7 +39,7 @@ public class AutoCheck{
 
         String s_ins_check = "echo 'set echo off' > /tmp/.inscheck.sql;" +
                              "echo 'set feedback off' >> /tmp/.inscheck.sql;" +
-                             "echo 'set linesize 999 pagesize 9999' >> /tmp/.inscheck.sql;" +
+                             "echo 'set linesize 999 pagesize 50000' >> /tmp/.inscheck.sql;" +
                              "echo \"alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';\" >> /tmp/.inscheck.sql;" +
                              "echo 'col tag for a40' >> /tmp/.inscheck.sql;" +
 
@@ -67,11 +67,26 @@ public class AutoCheck{
                              "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /tmp/.inscheck.sql;" +
 
                              "echo 'exit' >> /tmp/.inscheck.sql;" +
-                             "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\"";
+                             "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\";";
 
-        String s_db_check = "";
+        String s_db_check = "echo 'set echo off' > /home/oracle/dbcheck.sql" +
+                            "echo 'set feedback off' >> /home/oracle/dbcheck.sql" +
+                            "echo 'set linesize 999 pagesize 50000' >> /home/oracle/dbcheck.sql" +
+                            "echo 'col tag for a40' >> /home/oracle/dbcheck.sql" +
 
-        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;"
+
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:database_version>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;" +
+
+                            "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
+
+        String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check);
         System.out.println(a);
     }
 
