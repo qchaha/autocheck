@@ -41,10 +41,12 @@ public class AutoCheck{
                              "echo 'col name for a60' >> /home/oracle/test.sql;" +
                              "echo 'col tag for a40' >> /home/oracle/test.sql;" +
                              "echo 'col status for a10' >> /home/oracle/test.sql;" +
+
                              "echo 'set heading off' >> /home/oracle/test.sql;" +
                              "echo 'select ''#<tag:datafile_info>'' tag from dual;' >> /home/oracle/test.sql;" +
                              "echo 'set heading on' >> /home/oracle/test.sql;" +
                              "echo 'select name,bytes/1024/1024 sizeM,status from v$datafile;' >> /home/oracle/test.sql;" +
+                             
                              "echo 'exit' >> /home/oracle/test.sql;" +
                              "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
