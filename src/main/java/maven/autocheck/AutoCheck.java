@@ -177,7 +177,7 @@ public class AutoCheck{
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
 
-        String s_awr = "echo 'SPOOL /home/oracle/awr.txt'" +
+        String s_awr = "echo 'SPOOL /home/oracle/awr.txt';" +
                        "echo 'SET ECHO OFF' > /home/oracle/creawr.sql;" +
                        "echo 'SET VERI OFF' >> /home/oracle/creawr.sql;" +
                        "echo 'SET FEEDBACK OFF' >> /home/oracle/creawr.sql;" +
