@@ -157,10 +157,22 @@ public class AutoCheck{
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select name,status,bytes/1024/1024 sizeM from v$datafile;' >> /home/oracle/dbcheck.sql;" +
 
+                            "echo 'col operation for a10' >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
                             "echo \"select '#<tag:rman_info>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select  start_time, end_time, operation, output_bytes, status from v$rman_status order by end_time;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col fname for a60' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col ts_name for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col phyrds for 9999999999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col read_pct for 99.99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col phywrts for 9999999999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col write_pct for 99.99' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:datafile_io>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select * from (SELECT df.tablespace_name ts_name, df.file_name fname, fs.phyrds phyrds, (fs.phyrds * 100) / (fst.pr + tst.pr)  read_pct, fs.phywrts phywrts, (fs.phywrts * 100) / (fst.pw + tst.pw)   write_pct FROM sys.dba_data_files df , v$filestat fs , (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE df.file_id = fs.file# UNION SELECT tf.tablespace_name ts_name, tf.file_name fname, ts.phyrds phyrds,(ts.phyrds * 100) / (fst.pr + tst.pr)  read_pct, ts.phywrts  phywrts, (ts.phywrts * 100) / (fst.pw + tst.pw) write_pct FROM sys.dba_temp_files  tf, v$tempstat  ts, (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE tf.file_id = ts.file# ORDER BY phyrds DESC) where rownum < 10 ;' >> /home/oracle/dbcheck.sql;" +
 
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
