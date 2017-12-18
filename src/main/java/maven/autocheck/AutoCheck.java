@@ -84,6 +84,7 @@ public class AutoCheck{
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select banner from v$version;' >> /home/oracle/dbcheck.sql;" +
 
+                            "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check);
