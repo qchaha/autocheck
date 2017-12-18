@@ -37,37 +37,40 @@ public class AutoCheck{
                            "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
                            "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
 
-        String s_ins_check = "echo 'set echo off' > /home/oracle/test.sql;" +
-                             "echo 'set feedback off' >> /home/oracle/test.sql;" +
-                             "echo 'set linesize 999 pagesize 9999' >> /home/oracle/test.sql;" +
-                             "echo \"alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';\" >> /home/oracle/test.sql;" +
-                             "echo 'col tag for a40' >> /home/oracle/test.sql;" +
+        String s_ins_check = "echo 'set echo off' > /tmp/.inscheck.sql;" +
+                             "echo 'set feedback off' >> /tmp/.inscheck.sql;" +
+                             "echo 'set linesize 999 pagesize 9999' >> /tmp/.inscheck.sql;" +
+                             "echo \"alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';\" >> /tmp/.inscheck.sql;" +
+                             "echo 'col tag for a40' >> /tmp/.inscheck.sql;" +
 
-                             "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo \"select '#<tag:ins_startup_time>' tag from dual;\" >> /home/oracle/test.sql;" +
-                             "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select startup_time from v$instance;' >> /home/oracle/test.sql;" +
+                             "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+                             "echo \"select '#<tag:ins_startup_time>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+                             "echo 'select startup_time from v$instance;' >> /tmp/.inscheck.sql;" +
 
-                             "echo 'col sizeM for 999999.99' >> /home/oracle/test.sql;" +
-                             "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo \"select '#<tag:sga_info>' tag from dual;\" >> /home/oracle/test.sql;" +
-                             "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo 'select item,sum(bytes/1024/1024)sizeM from (select decode(pool,NULL,name,pool) item ,bytes from v$sgastat) group by item;' >> /home/oracle/test.sql;" +
+                             "echo 'col sizeM for 999999.99' >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+                             "echo \"select '#<tag:sga_info>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+                             "echo 'select item,sum(bytes/1024/1024)sizeM from (select decode(pool,NULL,name,pool) item ,bytes from v$sgastat) group by item;' >> /tmp/.inscheck.sql;" +
 
-                             "echo 'col value for a50' >> /home/oracle/test.sql;" +
-                             "echo 'col name for a30' >> /home/oracle/test.sql;" +
-                             "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo \"select '#<tag:nondefault-para>' tag from dual;\" >> /home/oracle/test.sql;" +
-                             "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo \"select name,value from v\\$parameter where isdefault != 'TRUE';\" >> /home/oracle/test.sql;" +
+                             "echo 'col value for a50' >> /tmp/.inscheck.sql;" +
+                             "echo 'col name for a30' >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+                             "echo \"select '#<tag:nondefault-para>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+                             "echo \"select name,value from v\\$parameter where isdefault != 'TRUE';\" >> /tmp/.inscheck.sql;" +
 
-                             "echo 'set heading off' >> /home/oracle/test.sql;" +
-                             "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /home/oracle/test.sql;" +
-                             "echo 'set heading on' >> /home/oracle/test.sql;" +
-                             "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /home/oracle/test.sql;" +
+                             "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+                             "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+                             "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+                             "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /tmp/.inscheck.sql;" +
 
-                             "echo 'exit' >> /home/oracle/test.sql;" +
-                             "chmod 777 /home/oracle/test.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/test.sql\"";
+                             "echo 'exit' >> /tmp/.inscheck.sql;" +
+                             "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\"";
+
+        String s_db_check = "";
+
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check);
         System.out.println(a);
     }
