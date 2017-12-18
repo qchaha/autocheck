@@ -124,6 +124,27 @@ public class AutoCheck{
                             "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
                             "echo 'select owner,object_name,original_name,operation,type,ts_name,createtime,droptime from dba_recyclebin;' >> /home/oracle/dbcheck.sql;" +
 
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:corruption_block>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'select count(*) corruption_count from v$database_block_corruption;' >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col object_name for a40' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col object_type for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:invalid_objects>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select object_name,object_type,owner,status from dba_objects where status = 'INVALID';\" >> /home/oracle/dbcheck.sql;" +
+
+                            "echo 'col grantee for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col granted_role for a15' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col admin_option for 9999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'col default_role for 9999' >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading off' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select '#<tag:dba_role>' tag from dual;\" >> /home/oracle/dbcheck.sql;" +
+                            "echo 'set heading on' >> /home/oracle/dbcheck.sql;" +
+                            "echo \"select * from dba_role_privs where granted_role = 'DBA';\" >> /home/oracle/dbcheck.sql;" +                     
+
                             "echo 'exit' >> /home/oracle/dbcheck.sql;" +
                             "chmod 777 /home/oracle/dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/dbcheck.sql\"";
 
