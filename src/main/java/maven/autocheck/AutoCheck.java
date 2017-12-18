@@ -195,8 +195,8 @@ public class AutoCheck{
                        "echo \"select '97'b into :bid from dual;\" >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT dbid INTO :dbid FROM v$database;' >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT instance_number INTO :inst_num FROM v$instance;' >> /home/oracle/creawr.sql;" +
-                       "echo 'END' >> /home/oracle/creawr.sql;"; +
-                       "echo '/' >> /home/oracle/creawr.sql;"; +
+                       "echo 'END' >> /home/oracle/creawr.sql;" +
+                       "echo '/' >> /home/oracle/creawr.sql;" +
                        "echo 'SELECT output FROM TABLE (DBMS_WORKLOAD_REPOSITORY.awr_report_text(:dbid,:inst_num,:bid,:eid));' >> /home/oracle/creawr.sql;" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;";
