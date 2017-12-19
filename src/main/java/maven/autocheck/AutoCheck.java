@@ -231,10 +231,10 @@ public class AutoCheck{
                        "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;rm /tmp/.awr.txt;";
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
-        System.out.println(a);
+        //System.out.println(a);
 
         try{
-          File writename = new File("/home/oracle/output.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
+          File writename = new File("//home//oracle//output.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
           writename.createNewFile(); // 创建新文件
           BufferedWriter out = new BufferedWriter(new FileWriter(writename));
           out.write(a); // \r\n即为换行
