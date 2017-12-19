@@ -214,7 +214,7 @@ public class AutoCheck{
                        "echo \"echo ' ' >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 1p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /home/oracle/awr_statistics.sh;" +
-                       "echo \"e2_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /home/oracle/awr_statistics.sh;" +
+                       "echo \"e2_num=\\$(cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | awk '{print \\$1}' | grep -n '^[0-9]' | cut -d \\":\\" -f 1 | sed -n 6p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e2_num=\\$(echo \\${e2_num} - 1 | bc)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | sed -n \"8,\\${e2_num}p\" >> /home/oracle/awr_statistics.log \" >> /home/oracle/awr_statistics.sh;" +
 
