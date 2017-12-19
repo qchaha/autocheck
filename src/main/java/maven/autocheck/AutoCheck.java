@@ -202,12 +202,12 @@ public class AutoCheck{
                        "echo \"SPOOL OFF\" >> /home/oracle/creawr.sql;" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
-                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;" +
+                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;"/* +
 
                        "echo \"b_num=$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print $1}' | cut -d ':' -f 1)\" > /home/oracle/awr_statistics.sh;" +
                        "echo 'e_num=$(echo ${b_num}+8 | bc)'' >> /home/oracle/awr_statistics.sh;" +
                        "echo 'cat /home/oracle/awr.txt | sed -n \"${b_num},${e_num}p\"';" +
-                       "chmod +x /home/oracle/awr_statistics.sh;sh /home/oracle/awr_statistics.sh;";
+                       "chmod +x /home/oracle/awr_statistics.sh;sh /home/oracle/awr_statistics.sh;";*/
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
