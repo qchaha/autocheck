@@ -239,6 +239,10 @@ public class AutoCheck{
         out.write(a); // \r\n即为换行
         out.flush(); // 把缓存区内容压入文件
         out.close(); // 最后记得关闭文件
+        
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String f_date()
