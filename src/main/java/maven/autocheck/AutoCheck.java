@@ -206,7 +206,7 @@ public class AutoCheck{
                        "echo \"SPOOL OFF\" >> /tmp/.creawr.sql;" +
 
                        "echo 'exit' >> /tmp/.creawr.sql;" +
-                       "chmod 777 /tmp/.creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.creawr.sql\" >/dev/null 2>\\&1; cat /tmp/.awr.txt;" +
+                       "chmod 777 /tmp/.creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.creawr.sql > /dev/null 2>&1\";" +
 
                        "echo \"echo '<tag:top 5 event>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
                        "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
@@ -234,11 +234,11 @@ public class AutoCheck{
         //System.out.println(a);
 
         try{
-          File writename = new File("//home//oracle//output.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
+          /* 写入Txt文件 */
+          File writename = new File("output.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
           writename.createNewFile(); // 创建新文件
           BufferedWriter out = new BufferedWriter(new FileWriter(writename));
           out.write(a); // \r\n即为换行
-          out.flush(); // 把缓存区内容压入文件
           out.close(); // 最后记得关闭文件
         }
         catch (Exception e) {
