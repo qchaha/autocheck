@@ -233,17 +233,6 @@ public class AutoCheck{
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         //System.out.println(a);
 
-        try{
-          /* 写入Txt文件 */
-          File writename = new File("output.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
-          writename.createNewFile(); // 创建新文件
-          BufferedWriter out = new BufferedWriter(new FileWriter(writename));
-          out.write(a); // \r\n即为换行
-          out.close(); // 最后记得关闭文件
-        }
-        catch (Exception e) {
-          e.printStackTrace();
-        }
     }
 
     public static String f_date()
