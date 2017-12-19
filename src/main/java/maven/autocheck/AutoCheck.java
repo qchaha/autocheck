@@ -1,8 +1,11 @@
 package maven.autocheck;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -235,7 +238,7 @@ public class AutoCheck{
         BufferedWriter out = new BufferedWriter(new FileWriter(writename));
         out.write(a); // \r\n即为换行
         out.flush(); // 把缓存区内容压入文件
-        out.close(); // 最后记得关闭文件 
+        out.close(); // 最后记得关闭文件
     }
 
     public static String f_date()
