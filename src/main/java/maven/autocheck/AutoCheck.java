@@ -206,7 +206,7 @@ public class AutoCheck{
 
                        "echo \"b_num=$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print $1}' | cut -d ':' -f 1)\" > /home/oracle/awr_statistics.sh;" +
                        "echo 'e_num=$(echo ${b_num}+8 | bc)' >> /home/oracle/awr_statistics.sh;" +
-                       "echo 'cat /home/oracle/awr.txt | sed -n \"${b_num},${e_num}p\"' > /home/oracle/awr_statistics.log;" +
+                       "echo 'cat /home/oracle/awr.txt | sed -n \"${b_num},${e_num}p\" > /home/oracle/awr_statistics.log';" ;/*+
 
                        "echo \"b_num=$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print $1}' | cut -d ':' -f 1  | sed -n 1p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e_num=$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print $1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /home/oracle/awr_statistics.sh;" +
@@ -214,7 +214,7 @@ public class AutoCheck{
                        "echo \"e2_num=$(echo ${e2_num}-1 | bc)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo 'cat /home/oracle/awr.txt | sed -n \"${b_num},${e_num}p\" | sed -n \"8,${e2_num}p'\" >> /home/oracle/awr_statistics.log;" +
                        "chmod +x /home/oracle/awr_statistics.sh;sh /home/oracle/awr_statistics.sh;cat /home/oracle/awr_statistics.log;"
-                       ;
+                       ;*/
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
