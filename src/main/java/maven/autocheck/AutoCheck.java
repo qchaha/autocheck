@@ -205,16 +205,25 @@ public class AutoCheck{
                        "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;" +
 
                        "echo \"echo '<tag:top 5 event>' > /home/oracle/awr_statistics.log\" > /home/oracle/awr_statistics.sh;" +
+                       "echo \"echo ' ' >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e_num=\\$(echo \\${b_num}+8 | bc)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
 
                        "echo \"echo '<tag:top 5 sql>' >> /home/oracle/awr_statistics.log \">> /home/oracle/awr_statistics.sh;" +
+                       "echo \"echo ' ' >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 1p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e2_num=\\$(cat /home/oracle/awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"e2_num=\\$(echo \\${e2_num} - 1 | bc)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | sed -n \"8,\\${e2_num}p\" >> /home/oracle/awr_statistics.log \" >> /home/oracle/awr_statistics.sh;" +
+
+                       "echo \"echo '<tag:instance_performance>' >> /home/oracle/awr_statistics.log \">> /home/oracle/awr_statistics.sh;" +
+                       "echo \"echo ' ' >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
+                       "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'DB Name' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /home/oracle/awr_statistics.sh;" +
+                       "echo \"e_num=\\$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /home/oracle/awr_statistics.sh;" +
+                       "echo \"e_num=\\$(echo \\${e_num}-1 | bc)\" >> /home/oracle/awr_statistics.sh; " +
+                       "echo \"cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
                        "chmod +x /home/oracle/awr_statistics.sh;sh /home/oracle/awr_statistics.sh;cat /home/oracle/awr_statistics.log;"
                        ;
 
