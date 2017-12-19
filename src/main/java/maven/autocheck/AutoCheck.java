@@ -204,7 +204,7 @@ public class AutoCheck{
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
                        "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;" +
 
-                       "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print $1}' | cut -d ':' -f 1)\" > /home/oracle/awr_statistics.sh;" +
+                       "echo \"b_num=\\$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1)\" > /home/oracle/awr_statistics.sh;" +
                        "echo \"e_num=\\$(echo \\${b_num}+8 | bc)\" >> /home/oracle/awr_statistics.sh;" +
                        "echo \"cat /home/oracle/awr.txt | sed -n \"\\${b_num},\\${e_num}p\" > /home/oracle/awr_statistics.log\" >> /home/oracle/awr_statistics.sh;" +
 
