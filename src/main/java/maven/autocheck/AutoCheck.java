@@ -175,7 +175,7 @@ public class AutoCheck{
                             "echo 'select * from (SELECT df.tablespace_name ts_name, df.file_name fname, fs.phyrds phyrds, (fs.phyrds * 100) / (fst.pr + tst.pr)  read_pct, fs.phywrts phywrts, (fs.phywrts * 100) / (fst.pw + tst.pw)   write_pct FROM sys.dba_data_files df , v$filestat fs , (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE df.file_id = fs.file# UNION SELECT tf.tablespace_name ts_name, tf.file_name fname, ts.phyrds phyrds,(ts.phyrds * 100) / (fst.pr + tst.pr)  read_pct, ts.phywrts  phywrts, (ts.phywrts * 100) / (fst.pw + tst.pw) write_pct FROM sys.dba_temp_files  tf, v$tempstat  ts, (select sum(f.phyrds) pr, sum(f.phywrts) pw from v$filestat f) fst, (select sum(t.phyrds) pr, sum(t.phywrts) pw from v$tempstat t) tst WHERE tf.file_id = ts.file# ORDER BY phyrds DESC) where rownum < 10 ;' >> /tmp/.dbcheck.sql;" +
 
                             "echo 'exit' >> /tmp/.dbcheck.sql;" +
-                            "chmod 777 /tmp/.dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.dbcheck.sql\";";
+                            "chmod 777 /tmp/.dbcheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.dbcheck.sql\";rm /tmp/.dbcheck.sql;";
 
         String s_awr = "echo 'SET ECHO OFF' > /tmp/.creawr.sql;" +
                        "echo 'SET VERI OFF' >> /tmp/.creawr.sql;" +
@@ -224,10 +224,7 @@ public class AutoCheck{
                        "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
                        "echo \"e_num=\\$(echo \\${e_num}-1 | bc)\" >> /tmp/.awr_statistics.sh; " +
                        "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
-                       "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;"
-
-
-                       ;
+                       "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;";
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
