@@ -202,7 +202,7 @@ public class AutoCheck{
                        "echo \"SPOOL OFF\" >> /home/oracle/creawr.sql;" +
 
                        "echo 'exit' >> /home/oracle/creawr.sql;" +
-                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;"/* +
+                       "chmod 777 /home/oracle/creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/home/oracle/creawr.sql\" >/dev/null 2>\\&1; cat /home/oracle/awr.txt;";/* +
 
                        "echo \"b_num=$(cat /home/oracle/awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print $1}' | cut -d ':' -f 1)\" > /home/oracle/awr_statistics.sh;" +
                        "echo 'e_num=$(echo ${b_num}+8 | bc)'' >> /home/oracle/awr_statistics.sh;" +
