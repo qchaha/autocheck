@@ -2,6 +2,7 @@ package maven.autocheck;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -224,7 +225,7 @@ public class AutoCheck{
                        "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
                        "echo \"e_num=\\$(echo \\${e_num}-1 | bc)\" >> /tmp/.awr_statistics.sh; " +
                        "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
-                       "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;";
+                       "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;rm /tmp/.awr.txt;";
 
         String a = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         System.out.println(a);
