@@ -48,7 +48,7 @@ public class AutoCheck{
   public static String f_search_log(String s_check_result, String s_tag)
   {
      int i_begin,i_end;
-     String s_retrun;
+     String s_return;
      i_begin = s_check_result.indexOf(s_tag);
      i_end = s_check_result.indexOf("#<tag:uname>");
      s_return = s_check_result.substring(i_begin, i_end);
