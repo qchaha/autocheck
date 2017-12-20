@@ -32,7 +32,7 @@ public class AutoCheck{
     String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
     //System.out.println(s_check_result);
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
-    String s_code = f_write_file(f_struct_html(), s_filepath);
+    String s_code = f_write_file(f_struct_html("","","","",""), s_filepath);
     System.out.println(s_code);
     System.out.println(f_search_log(s_check_result, "#<tag:date>"));
   }
