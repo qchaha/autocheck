@@ -52,7 +52,8 @@ public class AutoCheck{
      i_begin = s_check_result.indexOf(s_tag);
      i_end = s_check_result.indexOf("#<tag:uname>");
      s_return = s_check_result.substring(i_begin, i_end);
-     System.out.println(s_return);
+     System.out.println(i_begin);
+     System.out.println(i_end);
      return s_return;
   }
 
