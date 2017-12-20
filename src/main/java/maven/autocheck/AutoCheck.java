@@ -34,7 +34,7 @@ public class AutoCheck{
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
     String s_code = f_write_file(f_struct_html("","","","",""), s_filepath);
     System.out.println(s_code);
-    System.out.println(f_search_log(s_check_result, "#<tag:date>"));
+    System.out.println(f_search_log(s_check_result, "#<tag:hostname>"));
   }
 
   public static String f_struct_html(String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
