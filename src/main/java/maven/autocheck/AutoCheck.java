@@ -44,7 +44,7 @@ public class AutoCheck{
   public static String f_write_file(String s_content)
   {
     try{
-      File writename = new File("//usr/local//httpd-2.4.29//htdocscheck.html");
+      File writename = new File("//usr/local//httpd-2.4.29//htdocs//check.html");
       writename.createNewFile();
       BufferedWriter out = new BufferedWriter(new FileWriter(writename));
       out.write(s_content);
