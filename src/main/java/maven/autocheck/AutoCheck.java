@@ -53,6 +53,7 @@ public class AutoCheck{
      i_end = s_check_result.indexOf("#<tag:uname>");
      s_return = s_check_result.substring(i_begin, i_end);
      System.out.println(s_return);
+     return s_return;
   }
 
   public static String f_write_file(String s_content,String s_filepath)
