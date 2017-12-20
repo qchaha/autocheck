@@ -232,10 +232,6 @@ public class AutoCheck{
 
         String check_result_format = rmt_shell("192.168.197.113","root","root123",s_oscheck + s_ins_check + s_db_check + s_awr);
         //System.out.println(a);
-
-        String b = "";
-
-        System.out.println(b);
     }
 
     public static String f_date()
