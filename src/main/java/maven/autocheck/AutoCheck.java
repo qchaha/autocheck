@@ -59,8 +59,8 @@ public class AutoCheck{
          s_return = s_check_result.substring(0, i_begin);
      }
      //i_length = s_return.indexOf("#<tag:", s_return.indexOf("#<tag:") + 1);
-     i_end = i_begin + i_length;
-     s_return = s_check_result.substring(i_begin, i_end);
+     //i_end = i_begin + i_length;
+     //s_return = s_check_result.substring(i_begin, i_end);
      return s_return;
   }
 
