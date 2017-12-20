@@ -34,54 +34,40 @@ public class AutoCheck{
     String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
 
     String s_html_body = "<body>  <div class=\"container\">    <h2>" + s_section + ". " + s_db_name + "数据库系统检查</h2>    <pre></pre>    <pre></pre>    <h3>" + s_section + ".1 " + s_db_name + "1主机操作系统检查</h3>    <pre></pre>";
-    s_html_body = s_html_body + f_struct_table(s_check_result);
+           s_html_body = s_html_body + f_struct_table("OS", s_check_result);
 
-    String s_html_foot = "</div></body></html>";
-
-    return s_html_header + s_html_body + s_html_foot;
+    return s_html_header + s_html_body;
   }
 
-  public static String f_struct_table(String s_check_result)
+  public static String f_struct_table(String s_table_type, String s_check_result)
   {
     BufferedReader b_reader = null;
     String s_return = null;
-    String s_record = null;
     String s_item = null;
+    String s_record = null;
     String s_line = null;
-    String s_table_type[] = {"OS","INSTANCE","DATABASE"};
-    String s_item_os[] = {"检查时间","主机名","内核版本","CPU信息","内存使用情况","网络配置","文件系统使用情况","系统负载"};
-    int i_cur = 0;
-    if(s_table_type[0].equals("OS"))
+    if(s_table_type.equals("OS"))
     {
-      s_return = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"20%\">检查项目</th><th width=\"80%\">检查结果</th></tr></thead><tbody>";
-
-      while( i_cur < s_item_os.length)
-      {
-        s_record = f_search_log(s_check_result, f_item_record_map(s_item_os[i_cur]));
-
-        s_return = s_return + "<tr><td>" + s_item_os[i_cur] + "</td><td>";
-
+        s_item = "检查时间";
+        s_record = f_search_log(s_check_result, "#<tag:lsnrctl>");
+        s_return = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"20%\">检查项目</th><th width=\"80%\">检查结果</th></tr></thead><tbody><tr><td>" + s_item +"</td><td>";
         try
         {
           b_reader = new BufferedReader(new StringReader(s_record));
           b_reader.readLine();
-          while ((s_line = b_reader.readLine()) != null)
-          {
-            s_return = s_return + "<pre>" + s_line + "</pre>";
-          }
+            while ((s_line = b_reader.readLine()) != null)
+            {
+              s_return = s_return + "<pre>" + s_line + "</pre>";
+            }
         }
         catch(IOException e)
         {
-          e.printStackTrace();
+            e.printStackTrace();
         }
-        i_cur++;
-        s_return = s_return + "</td></tr>";
       }
+      s_return = s_return + "</td></tr></tbody></table></div>";
+      return s_return;
     }
-    s_return = s_return + "</tbody></table></div>";
-    System.out.println(s_return);
-    return s_return;
-  }
 
   public static String f_item_record_map(String s_item)
   {
@@ -93,24 +79,6 @@ public class AutoCheck{
       break;
       case "主机名":
       s_map = "#<tag:hostname>";
-      break;
-      case "内核版本":
-      s_map = "#<tag:uname>";
-      break;
-      case "CPU信息":
-      s_map = "#<tag:cpuinfo>";
-      break;
-      case "内存使用情况":
-      s_map = "#<tag:free>";
-      break;
-      case "网络配置":
-      s_map = "#<tag:hostname>";
-      break;
-      case "文件系统使用情况":
-      s_map = "#<tag:df>";
-      break;
-      case "系统负载":
-      s_map = "#<tag:vmstat>";
       break;
       default:
       s_map = "undefined item!";
@@ -137,15 +105,8 @@ public class AutoCheck{
       s_return = s_check_result.substring(i_begin);
     }
     i_length = s_return.indexOf("#<tag:", s_return.indexOf("#<tag:") + 1);
-    if( i_length == -1 )
-    {
-      s_return = s_return;
-    }
-    else
-    {
-      i_end = i_begin + i_length;
-      s_return = s_check_result.substring(i_begin, i_end);
-    }
+    i_end = i_begin + i_length;
+    s_return = s_check_result.substring(i_begin, i_end);
     return s_return;
   }
 
