@@ -1,11 +1,5 @@
 package maven.autocheck;
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.*;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +9,6 @@ import java.sql.Statement;
 import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.text.SimpleDateFormat;
-import java.io.InputStream;
 import ch.ethz.ssh2.ChannelCondition;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
@@ -32,28 +25,49 @@ public class AutoCheck{
     String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
     //System.out.println(s_check_result);
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
-    String s_code = f_write_file(f_struct_html("","","","",""), s_filepath);
+    String s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_filepath);
     System.out.println(s_code);
-    System.out.println(f_search_log(s_check_result, "#<tag:database_name>"));
   }
 
-  public static String f_struct_html(String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
+  public static String f_struct_html(String s_check_result, String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
   {
     String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
 
     String s_html_body = "<body>  <div class=\"container\">    <h2>" + s_section + ". " + s_db_name + "数据库系统检查</h2>    <pre></pre>    <pre></pre>    <h3>" + s_section + ".1 " + s_db_name + "1主机操作系统检查</h3>    <pre></pre>";
+           s_html_body = s_html_body + f_struct_table("OS", s_check_result);
+
     return s_html_header + s_html_body;
   }
 
-  public static String f_struct_table(String s_table_type)
+  public static String f_struct_table(String s_table_type, String s_check_result)
   {
+    BufferedReader b_reader = null;
     String s_return = null;
+    String s_item = null;
+    String s_record = null;
+    String s_line = null;
     if(s_table_type.equals("OS"))
     {
-        s_return = "<td> + s_item + </td>";
+        s_item = "检查时间";
+        s_record = f_search_log(s_check_result, "#<tag:lsnrctl>");
+        s_return = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"20%\">检查项目</th><th width=\"80%\">检查结果</th></tr></thead><tbody><tr><td>" + s_item +"</td><td>";
+        try
+        {
+          b_reader = new BufferedReader(new StringReader(s_record));
+          b_reader.readLine();
+            while ((s_line = b_reader.readLine()) != null)
+            {
+              s_return = s_return + "<pre>" + s_line + "</pre>";
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+      }
+      s_return = s_return + "</td></tr></tbody></table></div>";
+      return s_return;
     }
-    return s_return;
-  }
 
   public static String f_item_record_map(String s_item)
   {
@@ -78,7 +92,11 @@ public class AutoCheck{
     int i_begin,i_end,i_length;
     String s_return;
     i_begin = s_check_result.indexOf(s_tag);
-    if( i_begin == 0 )
+    if( i_begin == -1 )
+    {
+      s_return = "no record!";
+    }
+    else if( i_begin == 0 )
     {
       s_return = s_check_result;
     }
