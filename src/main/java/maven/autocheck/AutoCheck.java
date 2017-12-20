@@ -50,10 +50,17 @@ public class AutoCheck{
      int i_begin,i_end,i_length;
      String s_return;
      i_begin = s_check_result.indexOf(s_tag);
-     s_return = s_check_result.substring(0, i_begin);
-     //i_length = s_return.indexOf("#<tag:", s_return.indexOf("#<tag:") + 1);
-     //i_end = i_begin + i_length;
-     //s_return = s_check_result.substring(i_begin, i_end);
+     if( i_begin == 0 )
+     {
+         s_return = s_check_result;
+     }
+     else
+     {
+         s_return = s_check_result.substring(0, i_begin);
+     }
+     i_length = s_return.indexOf("#<tag:", s_return.indexOf("#<tag:") + 1);
+     i_end = i_begin + i_length;
+     s_return = s_check_result.substring(i_begin, i_end);
      return s_return;
   }
 
