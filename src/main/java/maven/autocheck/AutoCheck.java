@@ -23,7 +23,7 @@ public class AutoCheck{
   {
     String s_check_cmd = f_check_shell();
     String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
-    System.out.println(s_check_result);
+    //System.out.println(s_check_result);
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
     String s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_filepath);
     //System.out.println(s_code);
@@ -50,6 +50,7 @@ public class AutoCheck{
     String s_line = null;
     String s_table_type[] = {"OS","INSTANCE","DATABASE"};
     String s_item_os[] = {"检查时间","主机名","内核版本","CPU信息","内存使用情况","网络配置","文件系统使用情况","系统负载"};
+    String s_item_instance[] = {"实例启动时间","实例警告日志","实例补丁","SGA共享内存信息","PGA共享内存信息","登录会话统计","实例归档信息","实例非默认参数","联机日志切换频率","实例性能统计","Top5 等待事件","Top 5 SQL"};
     int i_cur = 0;
     if(s_table_type[0].equals("OS"))
     {
@@ -110,6 +111,42 @@ public class AutoCheck{
       break;
       case "系统负载":
       s_map = "#<tag:vmstat>";
+      break;
+      case "实例启动时间":
+      s_map = "#<tag:ins_startup_time>";
+      break;
+      case "实例警告日志":
+      s_map = "#<tag:>";
+      break;
+      case "实例补丁":
+      s_map = "#<tag:opatch>";
+      break;
+      case "SGA共享内存信息":
+      s_map = "#<tag:sga_info>";
+      break;
+      case "PGA共享内存信息":
+      s_map = "#<tag:>";
+      break;
+      case "登录会话统计":
+      s_map = "#<tag:session_count>";
+      break;
+      case "实例归档信息":
+      s_map = "#<tag:archivelog>";
+      break;
+      case "实例非默认参数":
+      s_map = "#<tag:nondefault-para>";
+      break;
+      case "联机日志切换频率":
+      s_map = "#<tag:log_switchcount>";
+      break;
+      case "实例性能统计":
+      s_map = "#<tag:instance_performance>";
+      break;
+      case "Top5 等待事件":
+      s_map = "#<tag:top 5 event>";
+      break;
+      case "Top 5 SQL":
+      s_map = "#<tag:top 5 sql>";
       break;
       default:
       s_map = "undefined item!";
@@ -177,7 +214,7 @@ public class AutoCheck{
     "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
-    "echo \"echo '#<tag:opath>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
+    "echo \"echo '#<tag:opatch>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
     "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
     "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
 
@@ -210,6 +247,16 @@ public class AutoCheck{
     "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /tmp/.inscheck.sql;" +
     "echo 'set heading on' >> /tmp/.inscheck.sql;" +
     "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /tmp/.inscheck.sql;" +
+
+    "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+    "echo \"select '#<tag:session_count>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+    "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+    "echo \"select count(*)session_count from v$session;\" >> /tmp/.inscheck.sql;" +
+
+    "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+    "echo \"select '#<tag:archivelog>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+    "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+    "echo \"archive log list;\" >> /tmp/.inscheck.sql;" +
 
     "echo 'exit' >> /tmp/.inscheck.sql;" +
     "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\";rm /tmp/.inscheck.sql;";
