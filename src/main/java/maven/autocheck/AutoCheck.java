@@ -23,10 +23,10 @@ public class AutoCheck{
   {
     String s_check_cmd = f_check_shell();
     String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
-    //System.out.println(s_check_result);
+    System.out.println(s_check_result);
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
     String s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_filepath);
-    System.out.println(s_code);
+    //System.out.println(s_code);
   }
 
   public static String f_struct_html(String s_check_result, String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
@@ -104,7 +104,7 @@ public class AutoCheck{
       s_map = "#<tag:free>";
       break;
       case "网络配置":
-      s_map = "#<tag:hostname>";
+      s_map = "#<tag:ifconfig>";
       break;
       case "文件系统使用情况":
       s_map = "#<tag:df>";
@@ -174,6 +174,7 @@ public class AutoCheck{
     "echo \"echo '#<tag:uname>'\" >>/tmp/.oscheck.sh; echo 'uname -a'>>/tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:cpuinfo>'\" >> /tmp/.oscheck.sh; echo cpu_count='$(cat /proc/cpuinfo | grep processor | wc -l)' >> /tmp/.oscheck.sh;echo cpu_model='$(cat /proc/cpuinfo | grep name | sed -n \"1p\")' >> /tmp/.oscheck.sh;echo 'echo ${cpu_count} X ${cpu_model#*: }' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:free>'\" >> /tmp/.oscheck.sh; echo 'free -m' >> /tmp/.oscheck.sh;" +
+    "echo \"echo '#<tag:ifconfig>'\" >> /tmp/.oscheck.sh; echo 'interface_count=$(ifconfig | grep -i hwaddr | wc -l)' >> /tmp/.oscheck.sh; echo 'while [ $interface_count -gt 0 ]' >> /tmp/.oscheck.sh;echo 'do' >> /tmp/.oscheck.sh;echo \"ip=\\$(ifconfig | grep 'inet addr' | awk '{print \\$2}' | sed -n \"\\${interface_count}p\")\" >> /tmp/.oscheck.sh; echo 'ip=${ip#*:}' >> /tmp/.oscheck.sh; echo \"i_name_mac=\\$(ifconfig | grep -i hwaddr | awk '{print \\$1 \\\" : \\\" \\$4\\\": \\\"\\$5}' | sed -n \"\\${interface_count}p\")\" >> /tmp/.oscheck.sh;echo 'echo \"$i_name_mac ip: $ip\"' >> /tmp/.oscheck.sh;echo 'interface_count=$(echo \"${interface_count}-1\" | bc)' >> /tmp/.oscheck.sh;echo 'done' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
