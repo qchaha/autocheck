@@ -29,7 +29,7 @@ public class AutoCheck{
   public static void main(String[] args )
   {
     String s_check_cmd = f_check_model();
-    String s_check_result = rmt_shell("192.168.197.113","root","root123",s_check_cmd);
+    //String s_check_result = rmt_shell("192.168.197.113","root","root123",s_check_cmd);
     //System.out.println(s_check_result);
     String s_code = f_write_file(f_struct_html());
     System.out.println(s_code);
