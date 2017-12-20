@@ -28,24 +28,37 @@ import java.util.regex.*;
 public class AutoCheck{
   public static void main(String[] args )
   {
-    String s_check_cmd = f_check_model();
-    //String s_check_result = rmt_shell("192.168.197.113","root","root123",s_check_cmd);
+    String s_check_cmd = f_check_shell();
+    String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
     //System.out.println(s_check_result);
-    String s_code = f_write_file(f_struct_html());
+    String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
+    String s_code = f_write_file(f_struct_html(), s_filepath);
     System.out.println(s_code);
+    System.out.println(f_search_log(s_check_result, "#<tag:date>"));
   }
 
-  public static String f_struct_html()
+  public static String f_struct_html(String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
   {
     String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
-    String s_html_body = "<body>  <div class=\"container\">    <h2>操作系统</h2>    <p></p>    <div class=\"table-responsive\">      <table class=\"table table-striped table-bordered\">        <thead>          <tr>            <th width=\"30%\">检查项目</th>            <th width=\"70%\">检查结果</th>          </tr>        </thead>        <tbody>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>          <tr>            <td>检查时间</td>            <td>              <pre>procs -----------memory---------- ---swap-- -----io---- --system-- -----cpu-----</pre>              <pre>r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</pre>              <pre>0  0      0 2888524  28536 217296   0    0    49     2   62   52  1  1 98  1  0</pre>            </td>          </tr>        </tbody>      </table>    </div>  </div></body>";
+
+    String s_html_body = "<body>  <div class=\"container\">    <h2>" + s_section + ". " + s_db_name + "数据库系统检查</h2>    <pre></pre>    <pre></pre>    <h3>" + s_section + ".1 " + s_db_name + "1主机操作系统检查</h3>    <pre></pre>";
     return s_html_header + s_html_body;
   }
 
-  public static String f_write_file(String s_content)
+  public static String f_search_log(String s_check_result, String s_tag)
+  {
+     int i_begin,i_end;
+     String s_retrun;
+     i_begin = s_check_result.indexOf(s_tag);
+     i_end = s_check_result.indexOf("#<tag:uname>");
+     s_return = s_check_result.substring(i_begin, i_end);
+     System.out.println(s_return);
+  }
+
+  public static String f_write_file(String s_content,String s_filepath)
   {
     try{
-      File writename = new File("//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html");
+      File writename = new File(s_filepath);
       writename.createNewFile();
       BufferedWriter out = new BufferedWriter(new FileWriter(writename));
       out.write(s_content);
@@ -58,13 +71,13 @@ public class AutoCheck{
     }
   }
 
-  public static String f_check_model()
+  public static String f_check_shell()
   {
     String s_oscheck =
     "echo '#!/bin/sh' > /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:date>'\" >> /tmp/.oscheck.sh; echo date >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:hostname>'\" >> /tmp/.oscheck.sh; echo hostname >> /tmp/.oscheck.sh;" +
-    "echo \"echo '#<tag:uname -a>'\" >>/tmp/.oscheck.sh; echo 'uname -a'>>/tmp/.oscheck.sh;" +
+    "echo \"echo '#<tag:uname>'\" >>/tmp/.oscheck.sh; echo 'uname -a'>>/tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:cpuinfo>'\" >> /tmp/.oscheck.sh; echo cpu_count='$(cat /proc/cpuinfo | grep processor | wc -l)' >> /tmp/.oscheck.sh;echo cpu_model='$(cat /proc/cpuinfo | grep name | sed -n \"1p\")' >> /tmp/.oscheck.sh;echo 'echo ${cpu_count} X ${cpu_model#*: }' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:free>'\" >> /tmp/.oscheck.sh; echo 'free -m' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
@@ -270,7 +283,7 @@ public class AutoCheck{
   }
 
   //远程调用shell
-  public static String rmt_shell(String ip, String username, String password, String cmd)
+  public static String f_rmt_shell(String ip, String username, String password, String cmd)
   {
     String re = null;
     String line = null;
