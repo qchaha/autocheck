@@ -50,7 +50,10 @@ public class AutoCheck{
     String s_line = null;
     String s_table_type[] = {"OS","INSTANCE","DATABASE"};
     String s_item_os[] = {"检查时间","主机名","内核版本","CPU信息","内存使用情况","网络配置","文件系统使用情况","系统负载"};
+    String s_item_instance[] = {"实例启动时间"，"实例警告日志","实例补丁","SGA共享内存信息","PGA共享内存信息","登录会话统计","实例归档信息","实例非默认参数","联机日志切换频率","实例性能统计","Top5 等待事件","Top 5 SQL"};
+
     int i_cur = 0;
+
     if(s_table_type[0].equals("OS"))
     {
       s_return = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"20%\">检查项目</th><th width=\"80%\">检查结果</th></tr></thead><tbody>";
@@ -79,43 +82,12 @@ public class AutoCheck{
       }
     }
     s_return = s_return + "</tbody></table></div>";
-    System.out.println(s_return);
     return s_return;
   }
 
   public static String f_item_record_map(String s_item)
   {
-    String s_map;
-    switch(s_item)
-    {
-      case "检查时间":
-      s_map = "#<tag:date>";
-      break;
-      case "主机名":
-      s_map = "#<tag:hostname>";
-      break;
-      case "内核版本":
-      s_map = "#<tag:uname>";
-      break;
-      case "CPU信息":
-      s_map = "#<tag:cpuinfo>";
-      break;
-      case "内存使用情况":
-      s_map = "#<tag:free>";
-      break;
-      case "网络配置":
-      s_map = "#<tag:ifconfig>";
-      break;
-      case "文件系统使用情况":
-      s_map = "#<tag:df>";
-      break;
-      case "系统负载":
-      s_map = "#<tag:vmstat>";
-      break;
-      default:
-      s_map = "undefined item!";
-      break;
-    };
+    String s_map = null;
     return s_map;
   }
 
@@ -178,7 +150,7 @@ public class AutoCheck{
     "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
-    "echo \"echo '#<tag:opath>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
+    "echo \"echo '#<tag:opatch>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
     "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
     "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
 
@@ -211,6 +183,16 @@ public class AutoCheck{
     "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /tmp/.inscheck.sql;" +
     "echo 'set heading on' >> /tmp/.inscheck.sql;" +
     "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /tmp/.inscheck.sql;" +
+
+    "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+    "echo \"select '#<tag:session_count>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+    "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+    "echo \"select count(*)session_count from v$session;\" >> /tmp/.inscheck.sql;" +
+
+    "echo 'set heading off' >> /tmp/.inscheck.sql;" +
+    "echo \"select '#<tag:archivelog>' tag from dual;\" >> /tmp/.inscheck.sql;" +
+    "echo 'set heading on' >> /tmp/.inscheck.sql;" +
+    "echo \"archive log list;\" >> /tmp/.inscheck.sql;" +
 
     "echo 'exit' >> /tmp/.inscheck.sql;" +
     "chmod 777 /tmp/.inscheck.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.inscheck.sql\";rm /tmp/.inscheck.sql;";
@@ -352,21 +334,21 @@ public class AutoCheck{
     "echo 'exit' >> /tmp/.creawr.sql;" +
     "chmod 777 /tmp/.creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.creawr.sql > /dev/null 2>&1\";" +
 
-    "echo \"echo '<tag:top 5 event>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:top 5 event>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(echo \\${b_num}+8 | bc)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
 
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
-    "echo \"echo '<tag:top 5 sql>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:top 5 sql>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 1p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e2_num=\\$(cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | awk '{print \\$1}' | grep -n '^[0-9]' | cut -d \":\" -f 1 | sed -n 6p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e2_num=\\$(echo \\${e2_num} - 1 | bc)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | sed -n \"8,\\${e2_num}p\" >> /tmp/.awr_statistics.log \" >> /tmp/.awr_statistics.sh;" +
 
-    "echo \"echo '<tag:instance_performance>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:instance_performance>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'DB Name' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
