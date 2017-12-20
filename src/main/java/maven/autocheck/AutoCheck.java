@@ -34,7 +34,7 @@ public class AutoCheck{
     String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
     String s_code = f_write_file(f_struct_html("","","","",""), s_filepath);
     System.out.println(s_code);
-    System.out.println(f_search_log(s_check_result, "#<tag:hostname>"));
+    System.out.println(f_search_log(s_check_result, "#<tag:database_name>"));
   }
 
   public static String f_struct_html(String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
@@ -45,24 +45,51 @@ public class AutoCheck{
     return s_html_header + s_html_body;
   }
 
+  public static String f_struct_table(String s_table_type)
+  {
+    String s_return = null;
+    if(s_table_type.equals("OS"))
+    {
+        s_return = "<td> + s_item + </td>";
+    }
+    return s_return;
+  }
+
+  public static String f_item_record_map(String s_item)
+  {
+    String s_map;
+    switch(s_item)
+    {
+      case "检查时间":
+      s_map = "#<tag:date>";
+      break;
+      case "主机名":
+      s_map = "#<tag:hostname>";
+      break;
+      default:
+      s_map = "undefined item!";
+      break;
+    };
+    return s_map;
+  }
+
   public static String f_search_log(String s_check_result, String s_tag)
   {
-     int i_begin,i_end,i_length;
-     String s_return;
-     i_begin = s_check_result.indexOf(s_tag);
-     if( i_begin == 0 )
-     {
-         s_return = s_check_result;
-     }
-     else
-     {
-         s_return = s_check_result.substring(0, i_begin);
-     }
-     i_length = s_return.indexOf("#<tag:", 1);
-     System.out.println(i_length);
-     //i_end = i_begin + i_length;
-     //s_return = s_check_result.substring(i_begin, i_end);
-     return s_return;
+    int i_begin,i_end,i_length;
+    String s_return;
+    i_begin = s_check_result.indexOf(s_tag);
+    if( i_begin == 0 )
+    {
+      s_return = s_check_result;
+    }
+    else
+    {
+      s_return = s_check_result.substring(i_begin);
+    }
+    i_length = s_return.indexOf("#<tag:", s_return.indexOf("#<tag:") + 1);
+    i_end = i_begin + i_length;
+    s_return = s_check_result.substring(i_begin, i_end);
+    return s_return;
   }
 
   public static String f_write_file(String s_content,String s_filepath)
@@ -137,9 +164,9 @@ public class AutoCheck{
     "echo 'col tag for a40' >> /tmp/.dbcheck.sql;" +
 
     "echo 'set heading off' >> /tmp/.dbcheck.sql;" +
-    "echo \"select '#<tag:database_version>' tag from dual;\" >> /tmp/.dbcheck.sql;" +
+    "echo \"select '#<tag:database_name>' tag from dual;\" >> /tmp/.dbcheck.sql;" +
     "echo 'set heading on' >> /tmp/.dbcheck.sql;" +
-    "echo 'select banner from v$version;' >> /tmp/.dbcheck.sql;" +
+    "echo 'select name from v$database;' >> /tmp/.dbcheck.sql;" +
 
     "echo 'col name for a80' >> /tmp/.dbcheck.sql;" +
     "echo 'set heading off' >> /tmp/.dbcheck.sql;" +
