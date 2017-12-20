@@ -35,6 +35,28 @@ public class AutoCheck{
     System.out.println(s_code);
   }
 
+  public static String f_struct_html()
+  {
+    String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
+    return s_html_header;
+  }
+
+  public static String f_write_file(String s_content)
+  {
+    try{
+      File writename = new File("//usr/local//httpd-2.4.29//htdocscheck.html");
+      writename.createNewFile();
+      BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+      out.write(s_content);
+      out.close();
+      return "finish!";
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      return "write html error!";
+    }
+  }
+
   public static String f_check_model()
   {
     String s_oscheck =
@@ -244,28 +266,6 @@ public class AutoCheck{
     "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;rm /tmp/.awr.txt;";
 
     return s_oscheck + s_ins_check + s_db_check + s_awr;
-  }
-
-  public static String f_struct_html()
-  {
-    String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
-    return s_html_header;
-  }
-
-  public static String f_write_file(String s_content)
-  {
-    try{
-      File writename = new File("//root//check.html");
-      writename.createNewFile();
-      BufferedWriter out = new BufferedWriter(new FileWriter(writename));
-      out.write(s_content);
-      out.close();
-      return "finish!";
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-      return "write html error!";
-    }
   }
 
   //远程调用shell
