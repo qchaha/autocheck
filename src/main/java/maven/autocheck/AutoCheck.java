@@ -24,24 +24,23 @@ public class AutoCheck{
     String s_check_cmd = f_check_shell();
     String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
     //System.out.println(s_check_result);
-    String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-4.0.0-beta.2//check.html";
+    String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-3.3.7//check.html";
     String s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_filepath);
-    //System.out.println(s_code);
+
   }
 
   public static String f_struct_html(String s_check_result, String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
   {
-    String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.css\" rel=\"stylesheet\"></head>";
+    String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head>";
 
-    String s_html_body = "<body>  <div class=\"container\">    <h2>" + s_section + ". " + s_db_name + "数据库系统检查</h2>    <pre></pre>    <pre></pre>    <h3>" + s_section + ".1 " + s_db_name + "1主机操作系统检查</h3>    <pre></pre>";
-    s_html_body = s_html_body + f_struct_table(s_check_result);
+    String s_html_body = f_struct_body(s_check_result);
 
     String s_html_foot = "</div></body></html>";
 
     return s_html_header + s_html_body + s_html_foot;
   }
 
-  public static String f_struct_table(String s_check_result)
+  public static String f_struct_body(String s_check_result)
   {
     BufferedReader b_reader = null;
     String s_return = null;
@@ -51,16 +50,47 @@ public class AutoCheck{
     String s_table_type[] = {"OS","INSTANCE","DATABASE"};
     String s_item_os[] = {"检查时间","主机名","内核版本","CPU信息","内存使用情况","网络配置","文件系统使用情况","系统负载"};
     String s_item_instance[] = {"实例启动时间","实例警告日志","实例补丁","SGA共享内存信息","PGA共享内存信息","登录会话统计","实例归档信息","实例非默认参数","联机日志切换频率","实例性能统计","Top5 等待事件","Top 5 SQL"};
-    int i_cur = 0;
-    if(s_table_type[0].equals("OS"))
+    String s_item_db[] = {"数据库名", "数据库版本", "控制文件信息", "日志文件信息", "表空间使用情况", "回收站对象", "损坏数据块信息", "失效对象统计", "DBA授权", "数据库大小", "数据文件状态", "数据文件I/O统计分布", "RMAN备份情况"};
+    String s_cursor[] = null;
+    int i_table_type = 0;
+    int i_item_type = 0;
+    int i_section1 = 1;
+    int i_section2 = 1;
+
+    String s_db_name = f_search_log(s_check_result,"#<tag:database_name>");
+    s_db_name = s_db_name.substring(s_db_name.lastIndexOf("-") + 2 , s_db_name.length() - 2);
+    //System.out.println(s_db_name);
+
+    s_return ="<body><div class=\"container-customize\"><h2>" + String.valueOf(i_section1) + ". " + s_db_name + "数据库系统</h2><pre></pre><pre></pre>";
+
+    while( i_table_type < s_table_type.length )
     {
-      s_return = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"20%\">检查项目</th><th width=\"80%\">检查结果</th></tr></thead><tbody>";
-
-      while( i_cur < s_item_os.length)
+      if( i_table_type == 0 )
       {
-        s_record = f_search_log(s_check_result, f_item_record_map(s_item_os[i_cur]));
+        i_item_type = 0;
+        s_cursor = s_item_os;
+        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "1主机操作系统检查</h3><pre></pre>";
+      }
+      else if( i_table_type == 1 )
+      {
+        i_item_type = 0;
+        s_cursor = s_item_instance;
+        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "1数据库实例检查</h3><pre></pre>";
+      }
+      else if( i_table_type == 2 )
+      {
+        i_item_type = 0;
+        s_cursor = s_item_db;
+        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "数据库检查</h3><pre></pre>";
+      }
 
-        s_return = s_return + "<tr><td>" + s_item_os[i_cur] + "</td><td>";
+      s_return = s_return + "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><thead><tr><th width=\"15%\">检查项目</th><th width=\"70%\">检查结果</th><th width=\"15%\">检查结论</th></tr></thead><tbody>";
+
+      while( i_item_type < s_cursor.length )
+      {
+        s_record = f_search_log(s_check_result, f_item_record_map(s_cursor[i_item_type]));
+
+        s_return = s_return + "<tr><td style=\"vertical-align: middle\">" + s_cursor[i_item_type] + "</td><td style=\"vertical-align: middle\">";
 
         try
         {
@@ -68,18 +98,21 @@ public class AutoCheck{
           b_reader.readLine();
           while ((s_line = b_reader.readLine()) != null)
           {
-            s_return = s_return + "<pre>" + s_line + "</pre>";
+            s_return = s_return + "<pre style=\"white-space:pre-wrap\">" + s_line + "</pre>";
           }
         }
         catch(IOException e)
         {
           e.printStackTrace();
         }
-        i_cur++;
-        s_return = s_return + "</td></tr>";
+        i_item_type++;
+        s_return = s_return + "</td><td style=\"vertical-align: middle\"><p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-remove\">异常</p></td></tr>";
       }
+
+      s_return = s_return + "</tbody></table></div><pre></pre><pre></pre>";
+      i_table_type++;
+      i_section2++;
     }
-    s_return = s_return + "</tbody></table></div>";
     return s_return;
   }
 
@@ -125,7 +158,7 @@ public class AutoCheck{
       s_map = "#<tag:sga_info>";
       break;
       case "PGA共享内存信息":
-      s_map = "#<tag:>";
+      s_map = "#<tag:pga_info>";
       break;
       case "登录会话统计":
       s_map = "#<tag:session_count>";
@@ -147,6 +180,45 @@ public class AutoCheck{
       break;
       case "Top 5 SQL":
       s_map = "#<tag:top 5 sql>";
+      break;
+      case "数据库名":
+      s_map = "#<tag:database_name>";
+      break;
+      case "数据库版本":
+      s_map = "#<tag:ctrl_file_info>";
+      break;
+      case "控制文件信息":
+      s_map = "#<tag:database_version>";
+      break;
+      case "日志文件信息":
+      s_map = "#<tag:log_info>";
+      break;
+      case "表空间使用情况":
+      s_map = "#<tag:tbs_usage>";
+      break;
+      case "回收站对象":
+      s_map = "#<tag:recycle>";
+      break;
+      case "损坏数据块信息":
+      s_map = "#<tag:corruption_block>";
+      break;
+      case "失效对象统计":
+      s_map = "#<tag:invalid_objects>";
+      break;
+      case "DBA授权":
+      s_map = "#<tag:dba_role>";
+      break;
+      case "数据库大小":
+      s_map = "#<tag:database_size>";
+      break;
+      case "数据文件状态":
+      s_map = "#<tag:datafile_info>";
+      break;
+      case "RMAN备份情况":
+      s_map = "#<tag:rman_info>";
+      break;
+      case "数据文件I/O统计分布":
+      s_map = "#<tag:datafile_io>";
       break;
       default:
       s_map = "undefined item!";
@@ -214,7 +286,7 @@ public class AutoCheck{
     "echo \"echo '#<tag:df>'\" >> /tmp/.oscheck.sh; echo 'df -h' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:vmstat>'\" >> /tmp/.oscheck.sh; echo 'vmstat 1 5' >> /tmp/.oscheck.sh;" +
     "echo \"echo '#<tag:lsnrctl>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"lsnrctl status\"' >> /tmp/.oscheck.sh;" +
-    "echo \"echo '#<tag:opatch>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv\"' >> /tmp/.oscheck.sh;" +
+    "echo \"echo '#<tag:opatch>'\" >> /tmp/.oscheck.sh;echo 'su - oracle -c \"\\$ORACLE_HOME/OPatch/opatch lsinv | awk NF\"' >> /tmp/.oscheck.sh;" +
     "echo tfff >> /tmp/.oscheck.sh;echo e1ff >> /tmp/.oscheck.sh;" +
     "chmod +x /tmp/.oscheck.sh;sh /tmp/.oscheck.sh;rm /tmp/.oscheck.sh;";
 
@@ -246,12 +318,12 @@ public class AutoCheck{
     "echo 'set heading off' >> /tmp/.inscheck.sql;" +
     "echo \"select '#<tag:log_switchcount>' tag from dual;\" >> /tmp/.inscheck.sql;" +
     "echo 'set heading on' >> /tmp/.inscheck.sql;" +
-    "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 20;\" >> /tmp/.inscheck.sql;" +
+    "echo \"select * from (select to_char (first_time, 'yyyy-mm-dd') day,count (recid) count_number,count (recid) * 200 size_mb from v\\$log_history group by to_char (first_time, 'yyyy-mm-dd') order by 1) where rownum < 10;\" >> /tmp/.inscheck.sql;" +
 
     "echo 'set heading off' >> /tmp/.inscheck.sql;" +
     "echo \"select '#<tag:session_count>' tag from dual;\" >> /tmp/.inscheck.sql;" +
     "echo 'set heading on' >> /tmp/.inscheck.sql;" +
-    "echo \"select count(*)session_count from v$session;\" >> /tmp/.inscheck.sql;" +
+    "echo \"select count(*)session_count from v\\$session;\" >> /tmp/.inscheck.sql;" +
 
     "echo 'set heading off' >> /tmp/.inscheck.sql;" +
     "echo \"select '#<tag:archivelog>' tag from dual;\" >> /tmp/.inscheck.sql;" +
@@ -307,15 +379,15 @@ public class AutoCheck{
     "echo 'set heading on' >> /tmp/.dbcheck.sql;" +
     "echo 'select a.a1 tbs_name,b.b2/1024/1024 tbs_sizeM,(b.b2-a.a2)/1024/1024 used_sizeM, a.a2/1024/1024 free_sizeM,substr((b.b2-a.a2)/b.b2*100,1,5) use_ratio from (select  tablespace_name a1, sum(nvl(bytes,0)) a2 from dba_free_space group by tablespace_name) a,(select tablespace_name b1,sum(bytes) b2 from dba_data_files group by tablespace_name) b,(select tablespace_name c1,contents c2,extent_management c3  from dba_tablespaces) c where a.a1=b.b1 and c.c1=b.b1;' >> /tmp/.dbcheck.sql;" +
 
-    "echo 'col owner for a15' >> /tmp/.dbcheck.sql;" +
-    "echo 'col original_name for a40' >> /tmp/.dbcheck.sql;" +
-    "echo 'col operation for 9999999999' >> /tmp/.dbcheck.sql;" +
-    "echo 'col type for a15' >> /tmp/.dbcheck.sql;" +
-    "echo 'col ts_name for a15' >> /tmp/.dbcheck.sql;" +
+    "echo 'col owner for a8' >> /tmp/.dbcheck.sql;" +
+    "echo 'col original_name for a13' >> /tmp/.dbcheck.sql;" +
+    "echo 'col operation for a9' >> /tmp/.dbcheck.sql;" +
+    "echo 'col type for a8' >> /tmp/.dbcheck.sql;" +
+    "echo 'col ts_name for a8' >> /tmp/.dbcheck.sql;" +
     "echo 'set heading off' >> /tmp/.dbcheck.sql;" +
     "echo \"select '#<tag:recycle>' tag from dual;\" >> /tmp/.dbcheck.sql;" +
     "echo 'set heading on' >> /tmp/.dbcheck.sql;" +
-    "echo 'select owner,object_name,original_name,operation,type,ts_name,createtime,droptime from dba_recyclebin;' >> /tmp/.dbcheck.sql;" +
+    "echo 'select owner,object_name,original_name,operation,type,ts_name,droptime from dba_recyclebin;' >> /tmp/.dbcheck.sql;" +
 
     "echo 'set heading off' >> /tmp/.dbcheck.sql;" +
     "echo \"select '#<tag:corruption_block>' tag from dual;\" >> /tmp/.dbcheck.sql;" +
@@ -351,13 +423,14 @@ public class AutoCheck{
     "echo 'select name,status,bytes/1024/1024 sizeM from v$datafile;' >> /tmp/.dbcheck.sql;" +
 
     "echo 'col operation for a10' >> /tmp/.dbcheck.sql;" +
+    "echo 'col status for a27' >> /tmp/.dbcheck.sql;" +
     "echo 'set heading off' >> /tmp/.dbcheck.sql;" +
     "echo \"select '#<tag:rman_info>' tag from dual;\" >> /tmp/.dbcheck.sql;" +
     "echo 'set heading on' >> /tmp/.dbcheck.sql;" +
     "echo 'select  start_time, end_time, operation, output_bytes, status from v$rman_status order by end_time;' >> /tmp/.dbcheck.sql;" +
 
-    "echo 'col fname for a60' >> /tmp/.dbcheck.sql;" +
-    "echo 'col ts_name for a15' >> /tmp/.dbcheck.sql;" +
+    "echo 'col fname for a50' >> /tmp/.dbcheck.sql;" +
+    "echo 'col ts_name for a10' >> /tmp/.dbcheck.sql;" +
     "echo 'col phyrds for 9999999999' >> /tmp/.dbcheck.sql;" +
     "echo 'col read_pct for 99.99' >> /tmp/.dbcheck.sql;" +
     "echo 'col phywrts for 9999999999' >> /tmp/.dbcheck.sql;" +
@@ -376,7 +449,7 @@ public class AutoCheck{
     "echo 'SET FEEDBACK OFF' >> /tmp/.creawr.sql;" +
     "echo 'SET TERMOUT ON' >> /tmp/.creawr.sql;" +
     "echo 'SET HEADING OFF' >> /tmp/.creawr.sql;" +
-    "echo 'SET LINESIZE 120 PAGESIZE 50000' >> /tmp/.creawr.sql;" +
+    "echo 'SET PAGESIZE 50000' >> /tmp/.creawr.sql;" +
 
     "echo 'VARIABLE dbid NUMBER' >> /tmp/.creawr.sql;" +
     "echo 'VARIABLE inst_num NUMBER' >> /tmp/.creawr.sql;" +
@@ -385,8 +458,8 @@ public class AutoCheck{
     "echo 'BEGIN' >> /tmp/.creawr.sql;" +
     //"echo \"SELECT MIN (snap_id) INTO :bid FROM dba_hist_snapshot WHERE TO_CHAR (end_interval_time, 'yyyymmdd') = TO_CHAR (SYSDATE-1, 'yyyymmdd');\" >> /tmp/.creawr.sql;" +
     //"echo \"SELECT MAX (snap_id) INTO :eid FROM dba_hist_snapshot WHERE TO_CHAR (begin_interval_time,'yyyymmdd') = TO_CHAR (SYSDATE-1, 'yyyymmdd');\" >> /tmp/.creawr.sql;" +
-    "echo \"select '99'a into :eid from dual;\" >> /tmp/.creawr.sql;" +
-    "echo \"select '97'b into :bid from dual;\" >> /tmp/.creawr.sql;" +
+    "echo \"select '135'a into :eid from dual;\" >> /tmp/.creawr.sql;" +
+    "echo \"select '131'b into :bid from dual;\" >> /tmp/.creawr.sql;" +
     "echo 'SELECT dbid INTO :dbid FROM v$database;' >> /tmp/.creawr.sql;" +
     "echo 'SELECT instance_number INTO :inst_num FROM v$instance;' >> /tmp/.creawr.sql;" +
     "echo 'END;' >> /tmp/.creawr.sql;" +
@@ -398,28 +471,36 @@ public class AutoCheck{
     "echo 'exit' >> /tmp/.creawr.sql;" +
     "chmod 777 /tmp/.creawr.sql;su - oracle -c \"sqlplus -S / as sysdba @/tmp/.creawr.sql > /dev/null 2>&1\";" +
 
-    "echo \"echo '<tag:top 5 event>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:top 5 event>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(echo \\${b_num}+8 | bc)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
 
+    "echo \"echo '#<tag:pga_info>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
-    "echo \"echo '<tag:top 5 sql>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
+    "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'PGA Aggr Summary' | awk '{print \\$1}' | cut -d ':' -f 1)\" >> /tmp/.awr_statistics.sh;" +
+    "echo \"e_num=\\$(echo \\${b_num}+24 | bc)\" >> /tmp/.awr_statistics.sh;" +
+    "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
+
+    "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:top 5 sql>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 1p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'SQL ordered by Elapsed Time' | awk '{print \\$1}' | cut -d ':' -f 1  | sed -n 2p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e2_num=\\$(cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | awk '{print \\$1}' | grep -n '^[0-9]' | cut -d \":\" -f 1 | sed -n 6p)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e2_num=\\$(echo \\${e2_num} - 1 | bc)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" | sed -n \"8,\\${e2_num}p\" >> /tmp/.awr_statistics.log \" >> /tmp/.awr_statistics.sh;" +
 
-    "echo \"echo '<tag:instance_performance>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:instance_performance>' >> /tmp/.awr_statistics.log \">> /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'DB Name' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(cat /tmp/.awr.txt  | grep -in 'Top 5 Timed Events' | awk '{print \\$1}' | cut -d ':' -f 1 )\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(echo \\${e_num}-1 | bc)\" >> /tmp/.awr_statistics.sh; " +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
-    "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;rm /tmp/.awr.txt;";
 
+    "chmod +x /tmp/.awr_statistics.sh;sh /tmp/.awr_statistics.sh;cat /tmp/.awr_statistics.log | awk NF;rm /tmp/.awr_statistics.sh;rm /tmp/.awr_statistics.log;rm /tmp/.awr.txt;rm /tmp/.creawr.sql;";
+
+    //System.out.println(s_awr);
     return s_oscheck + s_ins_check + s_db_check + s_awr;
   }
 
