@@ -477,7 +477,7 @@ public class AutoCheck{
     "echo \"e_num=\\$(echo \\${b_num}+8 | bc)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"cat /tmp/.awr.txt | sed -n \"\\${b_num},\\${e_num}p\" >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
 
-    "echo \"echo '#<tag:pga_info>' > /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
+    "echo \"echo '#<tag:pga_info>' >> /tmp/.awr_statistics.log\" > /tmp/.awr_statistics.sh;" +
     "echo \"echo ' ' >> /tmp/.awr_statistics.log\" >> /tmp/.awr_statistics.sh;" +
     "echo \"b_num=\\$(cat /tmp/.awr.txt  | grep -in 'PGA Aggr Summary' | awk '{print \\$1}' | cut -d ':' -f 1)\" >> /tmp/.awr_statistics.sh;" +
     "echo \"e_num=\\$(echo \\${b_num}+24 | bc)\" >> /tmp/.awr_statistics.sh;" +
