@@ -21,32 +21,62 @@ import java.util.regex.*;
 public class AutoCheck{
   public static void main(String[] args )
   {
-    String s_check_cmd = f_check_shell();
-    String s_check_result = f_rmt_shell("192.168.197.113","root","root123",s_check_cmd);
-    //System.out.println(s_check_result);
-    String s_filepath = "//usr/local//httpd-2.4.29//htdocs//bootstrap-3.3.7//check.html";
-    String s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_filepath);
+    String s_code = null;                //the return code of generate check report
+    String s_file_dir = null;            //project path,all file in there
+    String s_file_name = null;           //check report name
 
+    s_file_dir = "//usr/local//httpd-2.4.29//htdocs//bootstrap-3.3.7//";
+    s_file_name = "check.html";
+    //s_code = f_write_file(f_struct_html(s_check_result,"","","","",""), s_file_dir + s_file_name);
+    //s_code = f_write_file(f_struct_html(s_file_dir, s_file_name), s_file_dir + s_file_name);
+    f_struct_html(s_file_dir , s_file_name);
+    f_write_file(f_struct_html(s_file_dir , s_file_name), s_file_dir + s_file_name);
   }
 
-  public static String f_struct_html(String s_check_result, String s_db_name, String s_hostname, String s_section, String s_item, String s_log_record)
+  public static String f_struct_html(String s_file_dir , String s_file_name)
   {
-    String s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head>";
+    String s_config_name = null;         //check config name,will be replaced of db in future
+    String s_check_cmd = null;           //check command
+    String s_check_result = null;        //fetch all check result
+    String s_config[] = null;            //storage all the config value in config.ini spilted by space
+    String s_html_header = null;         //html_header
+    String s_html_body = null;           //html_body
+    String s_html_foot = null;           //html_footer
 
-    String s_html_body = f_struct_body(s_check_result);
+    int machine_count = 0;               //how many machine will be checked
 
-    String s_html_foot = "</div></body></html>";
+    s_config_name = "config.ini";
+    s_config = (f_read_file(s_file_dir + s_config_name).trim()).split(" ");
+    machine_count = s_config.length / 7;
+    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head><body><div class=\"container-customize\">";
+    s_html_foot = "</div></body></html>";
+
+    for(int cur = 0; cur < machine_count; cur++)
+    {
+      s_check_cmd = f_check_shell();
+      //System.out.println(s_config[ cur * 7 + 1]);
+      s_check_result = f_rmt_shell(s_config[cur * 7 ],s_config[ cur * 7 + 1 ],s_config[ cur * 7 + 2 ],s_check_cmd);
+      if(s_html_body == null)
+      {
+        s_html_body = f_struct_body(s_check_result,cur + 1);
+      }
+      else
+      {
+        s_html_body = s_html_body + f_struct_body(s_check_result,cur + 1);
+      }
+    }
 
     return s_html_header + s_html_body + s_html_foot;
   }
 
-  public static String f_struct_body(String s_check_result)
+  public static String f_struct_body(String s_check_result, int i_section1)
   {
     BufferedReader b_reader = null;
     String s_return = null;
     String s_record = null;
     String s_item = null;
     String s_line = null;
+    String s_db_name  = null;
     String s_table_type[] = {"OS","INSTANCE","DATABASE"};
     String s_item_os[] = {"检查时间","主机名","内核版本","CPU信息","内存使用情况","网络配置","文件系统使用情况","系统负载"};
     String s_item_instance[] = {"实例启动时间","实例警告日志","实例补丁","SGA共享内存信息","PGA共享内存信息","登录会话统计","实例归档信息","实例非默认参数","联机日志切换频率","实例性能统计","Top5 等待事件","Top 5 SQL"};
@@ -54,14 +84,13 @@ public class AutoCheck{
     String s_cursor[] = null;
     int i_table_type = 0;
     int i_item_type = 0;
-    int i_section1 = 1;
     int i_section2 = 1;
 
-    String s_db_name = f_search_log(s_check_result,"#<tag:database_name>");
+    s_db_name = f_search_log(s_check_result,"#<tag:database_name>");
     s_db_name = s_db_name.substring(s_db_name.lastIndexOf("-") + 2 , s_db_name.length() - 2);
     //System.out.println(s_db_name);
 
-    s_return ="<body><div class=\"container-customize\"><h2>" + String.valueOf(i_section1) + ". " + s_db_name + "数据库系统</h2><pre></pre><pre></pre>";
+    s_return = "<h2>" + String.valueOf(i_section1) + ". " + s_db_name + "数据库系统</h2><pre></pre><pre></pre>";
 
     while( i_table_type < s_table_type.length )
     {
@@ -69,13 +98,13 @@ public class AutoCheck{
       {
         i_item_type = 0;
         s_cursor = s_item_os;
-        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "1主机操作系统检查</h3><pre></pre>";
+        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "主机操作系统检查</h3><pre></pre>";
       }
       else if( i_table_type == 1 )
       {
         i_item_type = 0;
         s_cursor = s_item_instance;
-        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "1数据库实例检查</h3><pre></pre>";
+        s_return = s_return + "<h3>" + String.valueOf(i_section1) + "." + String.valueOf(i_section2) + " " + s_db_name + "数据库实例检查</h3><pre></pre>";
       }
       else if( i_table_type == 2 )
       {
@@ -185,10 +214,10 @@ public class AutoCheck{
       s_map = "#<tag:database_name>";
       break;
       case "数据库版本":
-      s_map = "#<tag:ctrl_file_info>";
+      s_map = "#<tag:database_version>";
       break;
       case "控制文件信息":
-      s_map = "#<tag:database_version>";
+      s_map = "#<tag:ctrl_file_info>";
       break;
       case "日志文件信息":
       s_map = "#<tag:log_info>";
@@ -271,6 +300,36 @@ public class AutoCheck{
       e.printStackTrace();
       return "write html error!";
     }
+  }
+
+  public static String f_read_file(String s_config_path)
+  {
+     File filename = new File(s_config_path);
+     String s_line = "";
+     String s_return = null;
+     BufferedReader bufferedReader = null;
+     try
+     {
+       bufferedReader = new BufferedReader(new FileReader(filename));
+       while((s_line = bufferedReader.readLine()) != null)
+       {
+         if(s_return == null)
+         {
+           s_return = s_line;
+         }
+         else
+         {
+           s_return = s_return + s_line;
+         }
+       }
+       bufferedReader.close();
+     }
+     catch(IOException e)
+     {
+       e.printStackTrace();
+       s_return = "read config file failure!";
+     }
+    return s_return;
   }
 
   public static String f_check_shell()
@@ -458,8 +517,8 @@ public class AutoCheck{
     "echo 'BEGIN' >> /tmp/.creawr.sql;" +
     //"echo \"SELECT MIN (snap_id) INTO :bid FROM dba_hist_snapshot WHERE TO_CHAR (end_interval_time, 'yyyymmdd') = TO_CHAR (SYSDATE-1, 'yyyymmdd');\" >> /tmp/.creawr.sql;" +
     //"echo \"SELECT MAX (snap_id) INTO :eid FROM dba_hist_snapshot WHERE TO_CHAR (begin_interval_time,'yyyymmdd') = TO_CHAR (SYSDATE-1, 'yyyymmdd');\" >> /tmp/.creawr.sql;" +
-    "echo \"select '135'a into :eid from dual;\" >> /tmp/.creawr.sql;" +
-    "echo \"select '131'b into :bid from dual;\" >> /tmp/.creawr.sql;" +
+    "echo \"select '160'a into :eid from dual;\" >> /tmp/.creawr.sql;" +
+    "echo \"select '159'b into :bid from dual;\" >> /tmp/.creawr.sql;" +
     "echo 'SELECT dbid INTO :dbid FROM v$database;' >> /tmp/.creawr.sql;" +
     "echo 'SELECT instance_number INTO :inst_num FROM v$instance;' >> /tmp/.creawr.sql;" +
     "echo 'END;' >> /tmp/.creawr.sql;" +
