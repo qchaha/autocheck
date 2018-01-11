@@ -37,8 +37,8 @@ public class AutoCheck{
 
   public static String f_check(String s_tag, String s_line, String s_os_type)
   {
-    //s_line = "         2          1            4       20    18.2 bc7gjv3ppdtbz             ";
-    //s_tag = "#<tag:top 5 sql>";
+    //s_line = "Available Physical Memory: 754 MB";
+    //s_tag = "#<tag:vmstat>";
     String s_red_prefix = "<span style=\"color:red;font-weight:bold\">";
     String s_red_postfix = "</span>";
     String s_return = null;
@@ -61,6 +61,7 @@ public class AutoCheck{
     int i_tbs_usage_warning = 85;                      //表空间使用率百分比
     int i_db_corruption_blocks = 0;                    //损坏文件块
     float i_t5sql_exe_per_s = 0;                       //每次执行sql所需时间
+    double d_windows_df_warning = 0.15;                 //windows文件系统可用空间和总空间比率
 
     if( s_os_type.equals("linux") )
     {
@@ -578,7 +579,102 @@ public class AutoCheck{
     }
     else if( s_os_type.equals("windows") )
     {
-      s_return = s_line;
+      switch(s_tag)
+      {
+        case "#<tag:free>":
+        if( s_line.indexOf("Available Physical Memory") != -1 )
+        {
+          p = Pattern.compile("(\\d+[,]\\d+\\sMB)|(\\d+\\sMB)");
+          m = p.matcher(s_line);
+          while( m.find() )
+          {
+            if( m.group(0).indexOf(",") != -1 )
+            {
+              if( Integer.parseInt(m.group(0).substring(0, (m.group(0).length() - 3)).replace(",","")) < 2000  )
+              {
+                s_return = s_line.replace(m.group(0), s_red_prefix + m.group(0) + s_red_postfix);
+              }
+              else
+              {
+                s_return = s_line;
+              }
+            }
+            else
+            {
+              if( Integer.parseInt(m.group(0).substring(0, m.group(0).length() - 3)) < 2000 )
+              {
+                s_return = s_line.replace(m.group(0), s_red_prefix + m.group(0) + s_red_postfix);
+              }
+              else
+              {
+                s_return = s_line;
+              }
+            }
+          }
+        }
+        else
+        {
+          s_return = s_line;
+        }
+        break;
+
+        case "#<tag:df>":
+        p = Pattern.compile("\\d+\\b");
+        m = p.matcher(s_line);
+        String s_temp = null;
+        while( m.find() )
+        {
+          if( i_col_num == 0 )
+          {
+            s_temp = m.group(0);
+          }
+          if( i_col_num == 1 )
+          {
+            if( Double.parseDouble(s_temp) / Double.parseDouble(m.group(0)) <= d_windows_df_warning)
+            {
+              s_return = s_line.replace(s_temp, s_red_prefix + s_temp + s_red_postfix);
+            }
+            else
+            {
+              s_return = s_line;
+            }
+          }
+          i_col_num++;
+        }
+        if( s_return == null )
+        {
+          s_return = s_line;
+        }
+        break;
+
+
+        case "#<tag:vmstat>":
+        strbuff = new StringBuffer(s_line);
+        p = Pattern.compile("(CPU\\d+)(.*)(\\d+)");
+        m = p.matcher(s_line);
+        while( m.find() )
+        {
+          if( Integer.parseInt(m.group(3)) >= 0 )
+          {
+            strbuff.replace(m.start(3), m.end(3), s_red_prefix + m.group(3) + s_red_postfix);
+            s_return = strbuff.toString();
+          }
+          else
+          {
+            s_return = s_line;
+          }
+        }
+        if( s_return == null )
+        {
+          s_return = s_line;
+        }
+
+        break;
+
+        default:
+          s_return = s_line;
+        break;
+      }
     }
     return s_return;
   }
@@ -600,9 +696,25 @@ public class AutoCheck{
     s_config_name = "config.ini";
     s_config = (f_read_file(s_file_dir + s_config_name).trim()).split(" ");
     machine_count = s_config.length / 8;
-    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head><body><div class=\"container-customize\">";
+    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head><body><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><div class=\"container-customize\"><p style=\"font-size:600%; text-align:center; margin:350px 0 0 0\">东莞市厚街医院</p><p style=\"font-size:600%; text-align:center; margin:30px 0 0 0\">数据库巡检报告</p><p style=\"font-size:300%; text-align:center; margin:700px 0 0 0\">广州市威盛软件有限公司</p><p style=\"font-size:260%; text-align:center; margin:20px 0 0 0\">2018.01.10</p><br><br><br><br><br></div><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">东莞市厚街医院数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">文档控制：</p><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">更改记录：</p><table class=\"table table-striped table-bordered \" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">日期</th><th width=\"25%\">作者</th><th width=\"25%\">职位</th><th width=\"25%\">版本</th></tr></thead><tbody><tr><td>2018.01.08</td><td>关俊荣</td><td>工程师</td><td>V1.0</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档审阅：</p><table class=\"table table-striped table-bordered\" style=\"width: 60%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">姓名</th><th width=\"25%\">职位</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档分发：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 650px 0\"><thead><tr><th width=\"25%\">接收单位</th><th width=\"25%\">姓名</th><th width=\"25%\">版本</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td>东莞市厚街医院</td><td><br></td><td>V1.0</td><td>2018.01.10</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">东莞市厚街医院数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">设备列表：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"10%\">序号</th><th width=\"25%\">IP地址</th><th width=\"20%\">操作系统</th><th width=\"20%\">数据库软件</th><th width=\"25%\">数据库实例名</th></tr></thead><tbody>";
     s_html_foot = "</div></body></html>";
 
+    //循环生成设备列表
+    for(int cur = 0; cur < machine_count; cur++)
+    {
+      s_html_header = s_html_header + "<tr><td>" + Integer.toString(cur + 1) + "</td><td>" + s_config[ cur * 8 ] + "</td><td>" + s_config[ cur * 8 + 3 ] + "</td><td>" + s_config[ cur * 8 + 4 ] + " " + s_config[ cur * 8 + 5 ] + "</td><td>" + s_config[ cur * 8 + 7 ] + "</td></tr>";
+    }
+    if( machine_count <= 2 )
+    {
+      s_html_header = s_html_header + "<tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div><div class=\"container-customize\"><p style=\"font-size:320%; text-align:left; margin:100px 0 50px 0\">详细巡检日志：</p>";
+    }
+    else
+    {
+      s_html_header = s_html_header + "</tbody></table></div></div><div class=\"container-customize\"><p style=\"font-size:320%; text-align:left; margin:100px 0 50px 0\">详细巡检日志：</p>";
+    }
+
+
+    //根据设备列表循环巡检并生成报告
     for(int cur = 0; cur < machine_count; cur++)
     {
       s_check_cmd = f_check_shell(s_config[ cur * 8 + 3 ], s_config[ cur * 8 + 4 ], s_config[ cur * 8 + 5 ], s_config[ cur * 8 + 6 ], s_config[ cur * 8 + 7 ]);
@@ -646,7 +758,7 @@ public class AutoCheck{
       s_item_instance = new String[] {"实例启动时间","实例服务器名","实例服务名","实例CPU活动情况","实例内存分配情况","实例启动参数","Top 5 SQL"};
       s_item_db = new String[] {"数据库版本","数据库大小","日志文件信息","数据文件读写情况","数据库锁和等待","活动用户和进程信息","数据库登录名信息","查看数据库用户角色"};
       s_title_name = f_search_log(s_check_result,"#<tag:ins_service_name>");
-      System.out.println(s_title_name);
+      //System.out.println(s_title_name);
       s_title_name = s_title_name.substring(s_title_name.lastIndexOf("-") + 2 , s_title_name.length() - 2);
     }
     else if( s_check_type.equals("oracle") )
@@ -1076,7 +1188,7 @@ public class AutoCheck{
       "echo #^<tag:date^> && echo %date:~0,10% - %time% &" +
       "echo #^<tag:hostname^> && hostname &" +
       "echo #^<tag:uname^> & systeminfo | findstr /b /c:\"OS Version\" &" +
-      "echo #^<tag:cpuinfo^> & wmic cpu get DeviceID,Name | findstr @  &" +
+      "echo #^<tag:cpuinfo^> & systeminfo | findstr /C \"Processor(s) Mhz\"  &" +
       "echo #^<tag:free^> & systeminfo | findstr Memory &" +
       "echo #^<tag:ifconfig^> &  wmic nicconfig get IPAddress,Description | findstr [0-9][0-9][0-9].[0-9][0-9][0-9].[0-9][0-9][0-9].[0-9][0-9][0-9] & " +
       "echo #^<tag:df^> & wmic LOGICALDISK where \"DriveType=3\" get DeviceID,Size,FreeSpace,Description,FileSystem &" +
