@@ -33,6 +33,7 @@ public class AutoCheck{
 
     //System.out.println(f_rmt_shell("192.168.197.142","administrator","1qaz@WSX","wmic cpu list brief"));
     //f_write_file(f_rmt_shell("192.168.197.142","administrator","1qaz@WSX","chcp 437 && systeminfo"),"//tmp//ff.txt");
+
   }
 
   public static String f_check(String s_tag, String s_line, String s_os_type)
@@ -573,7 +574,7 @@ public class AutoCheck{
         break;
 
         default:
-          s_return = s_line;
+        s_return = s_line;
         break;
       }
     }
@@ -672,7 +673,7 @@ public class AutoCheck{
         break;
 
         default:
-          s_return = s_line;
+        s_return = s_line;
         break;
       }
     }
@@ -685,56 +686,182 @@ public class AutoCheck{
     String s_config_name = null;         //check config name,will be replaced of db in future
     String s_check_cmd = null;           //check command
     String s_check_result = null;        //fetch all check result
-    String s_config[] = null;            //storage all the config value in config.ini spilted by space
+    String s_doc_info[] = null;            //storage all the config value in config.ini spilted by space
+    String s_host_info[] = null;            //storage all the config value in config.ini spilted by space
     String s_html_header = null;         //html_header
+    String s_html_cover = null;          //html_cover
+    String s_html_summary = null;         //check_summary
     String s_html_body = null;           //html_body
     String s_html_foot = null;           //html_footer
 
     int machine_count = 0;               //how many machine will be checked
+    Pattern p = null;
+    Matcher m = null;                    //matcher pattern config.ini
 
-    //读取文件，确定数据库数量
+    SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd");
+
+    //读取文件，找出主机信息（如ip，账号密码）和文档信息（如作者、客户名）
     s_config_name = "config.ini";
-    s_config = (f_read_file(s_file_dir + s_config_name).trim()).split(" ");
-    machine_count = s_config.length / 8;
-    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head><body><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><div class=\"container-customize\"><p style=\"font-size:600%; text-align:center; margin:350px 0 0 0\">东莞市厚街医院</p><p style=\"font-size:600%; text-align:center; margin:30px 0 0 0\">数据库巡检报告</p><p style=\"font-size:300%; text-align:center; margin:700px 0 0 0\">广州市威盛软件有限公司</p><p style=\"font-size:260%; text-align:center; margin:20px 0 0 0\">2018.01.10</p><br><br><br><br><br></div><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">东莞市厚街医院数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">文档控制：</p><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">更改记录：</p><table class=\"table table-striped table-bordered \" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">日期</th><th width=\"25%\">作者</th><th width=\"25%\">职位</th><th width=\"25%\">版本</th></tr></thead><tbody><tr><td>2018.01.08</td><td>关俊荣</td><td>工程师</td><td>V1.0</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档审阅：</p><table class=\"table table-striped table-bordered\" style=\"width: 60%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">姓名</th><th width=\"25%\">职位</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档分发：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 650px 0\"><thead><tr><th width=\"25%\">接收单位</th><th width=\"25%\">姓名</th><th width=\"25%\">版本</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td>东莞市厚街医院</td><td><br></td><td>V1.0</td><td>2018.01.10</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">东莞市厚街医院数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">设备列表：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"10%\">序号</th><th width=\"25%\">IP地址</th><th width=\"20%\">操作系统</th><th width=\"20%\">数据库软件</th><th width=\"25%\">数据库实例名</th></tr></thead><tbody>";
+    p = Pattern.compile("<host_info>.+</host_info>");
+    m = p.matcher(f_read_file(s_file_dir + s_config_name));
+    while(m.find())
+    {
+      s_host_info = ((m.group(0).substring(11, m.group(0).length()-12)).trim()).split(" ");
+    }
+    p = Pattern.compile("<doc_info>.+</doc_info>");
+    m = p.matcher(f_read_file(s_file_dir + s_config_name));
+    while(m.find())
+    {
+      s_doc_info = ((m.group(0).substring(10, m.group(0).length()-11)).trim()).split(" ");
+    }
+
+    machine_count = s_host_info.length / 8;
+    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head>";
     s_html_foot = "</div></body></html>";
 
+
+    s_html_cover = "<body><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><div class=\"container-customize\"><p style=\"font-size:600%; text-align:center; margin:350px 0 0 0\">" + s_doc_info[0] + "</p><p style=\"font-size:600%; text-align:center; margin:30px 0 0 0\">数据库巡检报告</p><p style=\"font-size:300%; text-align:center; margin:700px 0 0 0\">广州市威盛软件有限公司</p><p style=\"font-size:260%; text-align:center; margin:20px 0 0 0\">" + df.format(new Date()) + "</p><br><br><br><br><br></div><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">文档控制：</p><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">更改记录：</p><table class=\"table table-striped table-bordered \" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">日期</th><th width=\"25%\">作者</th><th width=\"25%\">职位</th><th width=\"25%\">版本</th></tr></thead><tbody><tr><td>" + df.format(new Date()) + "</td><td>" + s_doc_info[1] + "</td><td>" + s_doc_info[2] + "</td><td>" + s_doc_info[3] +  "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档审阅：</p><table class=\"table table-striped table-bordered\" style=\"width: 60%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">姓名</th><th width=\"25%\">职位</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档分发：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 650px 0\"><thead><tr><th width=\"25%\">接收单位</th><th width=\"25%\">姓名</th><th width=\"25%\">版本</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td>" + s_doc_info[0] + "</td><td><br></td><td>" + s_doc_info[3] + "</td><td>" + df.format(new Date()) + "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">设备列表：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"10%\">序号</th><th width=\"25%\">IP地址</th><th width=\"20%\">操作系统</th><th width=\"20%\">数据库软件</th><th width=\"25%\">数据库实例名</th></tr></thead><tbody>";
     //循环生成设备列表
     for(int cur = 0; cur < machine_count; cur++)
     {
-      s_html_header = s_html_header + "<tr><td>" + Integer.toString(cur + 1) + "</td><td>" + s_config[ cur * 8 ] + "</td><td>" + s_config[ cur * 8 + 3 ] + "</td><td>" + s_config[ cur * 8 + 4 ] + " " + s_config[ cur * 8 + 5 ] + "</td><td>" + s_config[ cur * 8 + 7 ] + "</td></tr>";
+      s_html_cover = s_html_cover + "<tr><td>" + Integer.toString(cur + 1) + "</td><td>" + s_host_info[ cur * 8 ] + "</td><td>" + s_host_info[ cur * 8 + 3 ] + "</td><td>" + s_host_info[ cur * 8 + 4 ] + " " + s_host_info[ cur * 8 + 5 ] + "</td><td>" + s_host_info[ cur * 8 + 7 ] + "</td></tr>";
     }
     if( machine_count <= 2 )
     {
-      s_html_header = s_html_header + "<tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div><div class=\"container-customize\"><p style=\"font-size:320%; text-align:left; margin:100px 0 50px 0\">详细巡检日志：</p>";
+      s_html_cover = s_html_cover + "<tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div>";
     }
     else
     {
-      s_html_header = s_html_header + "</tbody></table></div></div><div class=\"container-customize\"><p style=\"font-size:320%; text-align:left; margin:100px 0 50px 0\">详细巡检日志：</p>";
+      s_html_cover = s_html_cover + "</tbody></table></div></div>";
     }
 
-
+    //详细巡检日志
     //根据设备列表循环巡检并生成报告
     for(int cur = 0; cur < machine_count; cur++)
     {
-      s_check_cmd = f_check_shell(s_config[ cur * 8 + 3 ], s_config[ cur * 8 + 4 ], s_config[ cur * 8 + 5 ], s_config[ cur * 8 + 6 ], s_config[ cur * 8 + 7 ]);
+      s_check_cmd = f_check_shell(s_host_info[ cur * 8 + 3 ], s_host_info[ cur * 8 + 4 ], s_host_info[ cur * 8 + 5 ], s_host_info[ cur * 8 + 6 ], s_host_info[ cur * 8 + 7 ]);
       //System.out.println(s_check_cmd);
-      s_check_result = f_rmt_shell(s_config[ cur * 8 ], s_config[ cur * 8 + 1 ], s_config[ cur * 8 + 2 ], s_check_cmd);
+      s_check_result = f_rmt_shell(s_host_info[ cur * 8 ], s_host_info[ cur * 8 + 1 ], s_host_info[ cur * 8 + 2 ], s_check_cmd);
       //System.out.println(s_check_result);
       if(s_html_body == null)
       {
-        s_html_body = f_struct_body(s_check_result, cur + 1, s_config[ cur * 8 + 3 ], s_config[ cur * 8 + 4 ]);
+        s_html_body = f_struct_body(s_check_result, cur + 1, s_host_info[ cur * 8 + 3 ], s_host_info[ cur * 8 + 4 ], s_host_info[ cur * 8]);
       }
       else
       {
-        s_html_body = s_html_body + f_struct_body(s_check_result, cur + 1, s_config[ cur * 8 + 3 ], s_config[ cur * 8 + 4 ]);
+        s_html_body = s_html_body + f_struct_body(s_check_result, cur + 1, s_host_info[ cur * 8 + 3 ], s_host_info[ cur * 8 + 4 ], s_host_info[ cur * 8]);
       }
     }
 
-    return s_html_header + s_html_body + s_html_foot;
+
+
+
+    //巡检总结,根据详细巡检日志，找出问题项，再填写巡检总结，返回时放在详细巡检日志前
+    s_html_summary = "<div class=\"container-customize\"><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">巡检总结：</p>";
+
+    for( int cur = 0; cur < machine_count; cur++ )
+    {
+      s_html_summary = s_html_summary + "<h2 style=\"margin:0 0 30px 0\">" + Integer.toString(cur + 1) + ". " + s_host_info[ cur * 8 + 7 ] + "数据库系统</h2><table class=\"table table-bordered\" style=\" margin: 0 0 80px 0\"><thead><tr><th width=\"5%\">序号</th><th width=\"15%\">主机IP</th><th width=\"10%\">巡检内容</th><th width=\"15%\">巡检结果</th><th width=\"50%\">情况说明</th></tr></thead><tbody>";
+
+      for( int content = 0; content < 3; content++ )
+      {
+        s_html_summary = s_html_summary + "<tr><td style=\"vertical-align: middle\">" + String.valueOf(content + 1) + "</td>";
+
+        if( content == 0 )
+        {
+          s_html_summary = s_html_summary + "<td rowspan=\"3\" style=\"vertical-align: middle\">" + s_host_info[ cur * 8 ] + "</td><td style=\"vertical-align: middle\">操作系统</td><td style=\"vertical-align: middle;\">";
+        }
+        else if( content == 1 )
+        {
+          s_html_summary = s_html_summary + "<td style=\"vertical-align: middle\">数据库实例</td><td style=\"vertical-align: middle;\">";
+        }
+        else if( content == 2 )
+        {
+          s_html_summary = s_html_summary + "<td style=\"vertical-align: middle\">数据库</td><td style=\"vertical-align: middle;\">";
+        }
+       if( s_html_body.indexOf("<!--tag: mARk for waRniNg iN tAblE <" + s_host_info[ cur * 8 ] + ":" + String.valueOf(content) + ":") != -1 )
+       {
+         int i_warning_count = 0;
+        p = p.compile("(<!--tag: mARk for waRniNg iN tAblE <" + s_host_info[ cur * 8 ] + ":" + String.valueOf(content) + ":)(.{3,8})(> -->)");
+        m = p.matcher(s_html_body);
+        s_html_summary = s_html_summary + "<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-warning\"><span class=\"glyphicon glyphicon-warning-sign\">警告</p></td><td style=\"vertical-align\">";
+        while( m.find() )
+        {
+          i_warning_count++;
+          //System.out.println(m.group(2));
+          switch(m.group(2))
+          {
+            case "内存使用情况":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space: pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".系统内存率使用较高，建议关闭不必要的应用或者进行内存扩容，详见巡检日志的\"<b>内存使用情况</b>\"检查项目。</pre>";
+            break;
+
+            case "文件系统使用情况":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space: pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".文件系统使用率较高，建议清理不必要的文件或者进行文件系统扩容，详见巡检日志的\"<b>文件系统使用情况</b>\"检查项目。</pre>";
+            break;
+
+            case "系统负载":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space: pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".操作系统负载较高，建议与系统管理员联系，详见巡检日志的\"<b>表空间使用情况</b>\"检查项目。</pre>";
+            break;
+
+            case "实例警告日志":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space: pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".数据库实例日志近段时间存在警告，建议与数据库管理员联系，详见巡检日志的\"<b>实例警告日志</b>\"检查项目。</pre>";
+            break;
+
+            case "表空间使用情况":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space: pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".数据库表空间使用率较高，建议清理失效对象和回收站对象，或者进行表空间扩容，详见巡检日志的\"<b>表空间使用情况</b>\"检查项目。</pre>";
+            break;
+
+            case "RMAN备份情况":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space:pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".近段时间数据库RMAN备份出现警告，建议与数据库管理员联系，详见巡检日志的\"<b>RMAN备份情况</b>\"检查项目。</pre>";
+            break;
+
+            case "Top 5 SQL":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space:pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".数据库实例存在较长耗时SQL，建议与数据库管理员联系，详见巡检日志的\"<b>Top 5 SQL</b>\"检查项目。</pre>";
+            break;
+
+            case "损坏数据块信息":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space:pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".数据库存在损坏数据块，建议与数据库管理员联系，详见巡检日志的\"<b>损坏数据块信息</b>\"检查项目。</pre>";
+            break;
+
+            case "数据文件状态":
+            s_html_summary = s_html_summary + "<pre style=\"font-size: 100%; white-space:pre-wrap; font-family: inherit;\">" + String.valueOf(i_warning_count) + ".数据库存在离线或需要恢复的数据文件，建议与数据库管理员联系，详见巡检日志的\"<b>数据文件状态</b>\"检查项目。</pre>";
+            break;
+
+            default :
+
+            break;
+          }
+        }
+        s_html_summary = s_html_summary + "</td></tr>";
+      }
+        else
+        {
+          switch(content)
+          {
+            case 0:
+            s_html_summary = s_html_summary + "<p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-warning-sign\">警告</p></td><td style=\"vertical-align: middle\">操作系统运行情况良好</td></tr>";
+            break;
+            case 1:
+            s_html_summary = s_html_summary + "<p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-warning-sign\">警告</p></td><td style=\"vertical-align: middle\">数据库实例运行情况良好</td></tr>";
+            break;
+            case 2:
+            s_html_summary = s_html_summary + "<p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-warning-sign\">警告</p></td><td style=\"vertical-align: middle\">数据库运行情况良好</td></tr>";
+            break;
+            default:
+            break;
+          }
+        }
+      }
+      s_html_summary = s_html_summary + "</tbody></table>";
+    }
+
+    s_html_summary = s_html_summary + "</div></div><div class=\"container-customize\"><p style=\"font-size:320%; text-align:left; margin:100px 0 50px 0\">详细巡检日志：</p>";
+
+
+    return s_html_header + s_html_cover + s_html_summary + s_html_body + s_html_foot;
   }
 
-  public static String f_struct_body(String s_check_result, int i_section1, String s_os_type, String s_check_type)
+  public static String f_struct_body(String s_check_result, int i_section1, String s_os_type, String s_check_type, String s_host_ip)
   {
     BufferedReader b_reader = null;
     String s_return = null;
@@ -831,15 +958,16 @@ public class AutoCheck{
         {
           e.printStackTrace();
         }
-        i_item_type++;
         if( is_ok == true )
         {
-          s_return = s_return + "</td><td style=\"vertical-align: middle;\"><p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-remove\">异常</p></td></tr>";
+          s_return = s_return + "</td><td style=\"vertical-align: middle;\"><p class=\"btn btn-success\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-warning-sign\">警告</p></td></tr>";
         }
         else
         {
-          s_return = s_return + "</td><td style=\"vertical-align: middle\",\"\"><p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-warning\"><span class=\"glyphicon glyphicon-remove\">异常</p></td></tr>";
+          s_return = s_return + "</td><td style=\"vertical-align: middle\",\"\"><p class=\"btn btn-customize\"><span class=\"glyphicon glyphicon-ok\">正常</p>&nbsp;&nbsp;&nbsp;&nbsp;<p class=\"btn btn-warning\"><span class=\"glyphicon glyphicon-warning-sign\"><!--tag: mARk for waRniNg iN tAblE <" + s_host_ip + ":" + String.valueOf(i_table_type) + ":" + s_cursor[i_item_type] + "> -->警告</p></td></tr>";
         }
+
+        i_item_type++;
 
       }
 
