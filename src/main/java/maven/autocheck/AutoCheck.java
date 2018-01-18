@@ -61,12 +61,15 @@ public class AutoCheck{
     String s_node_ip[] = null;
     String s_rac_or_single = null;
     String s_matcher_warning = null;
+    String s_title_name = null;
+    String s_check_result = null;
     Pattern p = null;
     Matcher m = null;
     int i_node_num = 0;                       //use for s_node_ip[x] ,indicate of node id
     int i_row_count = 0;                      //use for <td rowspan=x></td>
     int i_td_count = 0;                       //use for td id
     int i_caption_count = 0;                  //use for caption id
+    int i_key = 0;                            //if key ==1 ,break
 
     re = "<div class=\"container-customize\"><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">巡检总结：</p>";
 
@@ -74,16 +77,22 @@ public class AutoCheck{
     m = p.matcher(s_doc_body_structure);
 
     while(m.find())
-    { System.out.println(m.group(0));
+    { System.out.println("m:" + m.group(0));
       if( m.group(0).indexOf("RAC") != -1 )
       {
+        i_key = 0;
         s_rac_or_single = "RAC";
         //把RAC的各节点IP分离出来
         Pattern p1 = Pattern.compile("<RAC>(\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}.?){2,4}</RAC>");
-        Matcher m1 = p1.matcher(s_doc_body_structure);
+        Matcher m1 = p1.matcher(m.group(0));
         while( m1.find() )
-        {
+        {System.out.println("m1:" + m1.group(0));
+          if( i_key == 1 )
+          {
+            break;
+          }
           s_node_ip = m1.group(0).substring( 5, m1.group(0).length() - 6).trim().split(" ");
+          i_key++;
         }
       }
       else if( m.group(0).indexOf("single") != -1 )
@@ -94,9 +103,19 @@ public class AutoCheck{
         i_node_num = 0;
       }
 
+      if( f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "db_type" ).equals("oracle") )
+      {
+        s_title_name = f_search_log(f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "check_result" ), "#<tag:database_name>");
+        s_title_name = s_title_name.substring(s_title_name.lastIndexOf("-") + 2 , s_title_name.length() - 2);
+      }
+      else if( f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "db_type" ).equals("sqlserver") )
+      {
+        s_title_name = f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "instance_name" );
+      }
+
       //循环生成总结
       //根据有多少套数据库系统循环生成报告
-      re = re + "<h2 style=\"margin:0 0 30px 0\">" + Integer.toString(i_caption_count + 1) + ". " + f_ip_checkresult_map( s_node_ip[i_node_num], s_check_result_array, "instance_name") + "数据库系统</h2><table class=\"table table-bordered\" style=\" margin: 0 0 80px 0\"><thead><tr><th width=\"5%\">序号</th><th width=\"15%\">主机IP</th><th width=\"10%\">巡检内容</th><th width=\"15%\">巡检结果</th><th width=\"50%\">情况说明</th></tr></thead><tbody>";
+      re = re + "<h2 style=\"margin:0 0 30px 0\">" + Integer.toString(i_caption_count + 1) + ". " + s_title_name + "数据库系统</h2><table class=\"table table-bordered\" style=\" margin: 0 0 80px 0\"><thead><tr><th width=\"5%\">序号</th><th width=\"15%\">主机IP</th><th width=\"10%\">巡检内容</th><th width=\"15%\">巡检结果</th><th width=\"50%\">情况说明</th></tr></thead><tbody>";
 
       if( s_rac_or_single.equals("RAC") )
       {
