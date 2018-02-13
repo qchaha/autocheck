@@ -25,33 +25,16 @@ public class AutoCheck{
     String s_file_dir = null;            //project path,all file in there
     String s_file_name = null;           //check report name
 
-    s_file_dir = "//usr//local//httpd-2.4.29//htdocs//bootstrap-3.3.7//";
-    s_file_name = "check.html";
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+    s_file_dir = System.getProperty("user.dir") + "//";
+    s_file_name = "check_" + df.format(new Date()) + ".html";
 
     //f_struct_html(s_file_dir , s_file_name);
     f_write_file(f_struct_html(s_file_dir , s_file_name), s_file_dir + s_file_name);
 
     //System.out.println(f_rmt_shell("192.168.197.142","administrator","1qaz@WSX","wmic cpu list brief"));
     //f_write_file(f_rmt_shell("192.168.197.142","administrator","1qaz@WSX","chcp 437 && systeminfo"),"//tmp//ff.txt");
-
-    Pattern p = null;
-    Matcher m = null;
-    String ss = null;
-    p = Pattern.compile("<doc_structure>.+</doc_structure>");
-    m = p.matcher(f_read_file(s_file_dir+"config.ini"));
-    while(m.find())
-    {
-      ss=m.group(0);
-    }
-    p = Pattern.compile("(<single>\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}</single>)|(<RAC>(\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}.?){2,4}</RAC>)");
-    m = p.matcher(ss);
-
-    while(m.find())
-    {
-      //System.out.println(m.group(0));
-    }
-
-
   }
 
   public static String f_struct_summary(String s_check_result_array[][], String s_html_body, String s_doc_body_structure)
@@ -77,7 +60,7 @@ public class AutoCheck{
     m = p.matcher(s_doc_body_structure);
 
     while(m.find())
-    { System.out.println("m:" + m.group(0));
+    { //System.out.println("m:" + m.group(0));
       if( m.group(0).indexOf("RAC") != -1 )
       {
         i_key = 0;
@@ -86,7 +69,7 @@ public class AutoCheck{
         Pattern p1 = Pattern.compile("<RAC>(\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}.?){2,4}</RAC>");
         Matcher m1 = p1.matcher(m.group(0));
         while( m1.find() )
-        {System.out.println("m1:" + m1.group(0));
+        {//System.out.println("m1:" + m1.group(0));
           if( i_key == 1 )
           {
             break;
@@ -278,7 +261,7 @@ public class AutoCheck{
     SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd");
 
     //读取文件，找出主机信息（如ip，账号密码）、文档信息（如作者、客户名）、文档结构
-    s_config_name = "config.ini";
+    s_config_name = "dist/config/config.ini";
     p = Pattern.compile("<host_info>.+</host_info>");
     m = p.matcher(f_read_file(s_file_dir + s_config_name));
     while(m.find())
@@ -300,26 +283,6 @@ public class AutoCheck{
 
 
     machine_count = s_host_info.length / 8;
-    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head>";
-    s_html_foot = "</div></body></html>";
-
-
-    s_html_cover = "<body><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><div class=\"container-customize\"><p style=\"font-size:600%; text-align:center; margin:350px 0 0 0\">" + s_doc_info[0] + "</p><p style=\"font-size:600%; text-align:center; margin:30px 0 0 0\">数据库巡检报告</p><p style=\"font-size:300%; text-align:center; margin:700px 0 0 0\">广州市威盛软件有限公司</p><p style=\"font-size:260%; text-align:center; margin:20px 0 0 0\">" + df.format(new Date()) + "</p><br><br><br><br><br></div><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">文档控制：</p><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">更改记录：</p><table class=\"table table-striped table-bordered \" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">日期</th><th width=\"25%\">作者</th><th width=\"25%\">职位</th><th width=\"25%\">版本</th></tr></thead><tbody><tr><td>" + df.format(new Date()) + "</td><td>" + s_doc_info[1] + "</td><td>" + s_doc_info[2] + "</td><td>" + s_doc_info[3] +  "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档审阅：</p><table class=\"table table-striped table-bordered\" style=\"width: 60%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">姓名</th><th width=\"25%\">职位</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档分发：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 650px 0\"><thead><tr><th width=\"25%\">接收单位</th><th width=\"25%\">姓名</th><th width=\"25%\">版本</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td>" + s_doc_info[0] + "</td><td><br></td><td>" + s_doc_info[3] + "</td><td>" + df.format(new Date()) + "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">设备列表：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"10%\">序号</th><th width=\"25%\">IP地址</th><th width=\"20%\">操作系统</th><th width=\"20%\">数据库软件</th><th width=\"25%\">数据库实例名</th></tr></thead><tbody>";
-    //循环生成设备列表
-    for(int cur = 0; cur < machine_count; cur++)
-    {
-      s_html_cover = s_html_cover + "<tr><td>" + Integer.toString(cur + 1) + "</td><td>" + s_host_info[ cur * 8 ] + "</td><td>" + s_host_info[ cur * 8 + 3 ] + "</td><td>" + s_host_info[ cur * 8 + 4 ] + " " + s_host_info[ cur * 8 + 5 ] + "</td><td>" + s_host_info[ cur * 8 + 7 ] + "</td></tr>";
-    }
-    if( machine_count <= 2 )
-    {
-      s_html_cover = s_html_cover + "<tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div>";
-    }
-    else
-    {
-      s_html_cover = s_html_cover + "</tbody></table></div></div>";
-    }
-
-
     //构造数组，以ip为头，保存详细巡检日志、操作系统类型、数据库类型、数据库版本、实例名，使信息一一对应
     s_check_result_array = new String[machine_count][6];
     for(int cur = 0; cur < machine_count; cur++)
@@ -334,6 +297,29 @@ public class AutoCheck{
       s_check_result_array[cur][3] = s_host_info[ cur * 8 + 4 ];
       s_check_result_array[cur][4] = s_host_info[ cur * 8 + 5 ];
       s_check_result_array[cur][5] = s_host_info[ cur * 8 + 7 ];
+    }
+
+
+
+
+    s_html_header = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Autocheck</title><!-- 包含头部信息用于适应不同设备 --><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><!-- 包含 bootstrap 样式表 --><link href=\"dist/css/bootstrap.min.v3.3.7-modify.css\" rel=\"stylesheet\"><link href=\"dist/css/bootstrap-table.css\" rel=\"stylesheet\"></head>";
+    s_html_foot = "</div></body></html>";
+
+
+    s_html_cover = "<body><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><div class=\"container-customize\"><p style=\"font-size:600%; text-align:center; margin:350px 0 0 0\">" + s_doc_info[0] + "</p><p style=\"font-size:600%; text-align:center; margin:30px 0 0 0\">数据库巡检报告</p><p style=\"font-size:300%; text-align:center; margin:700px 0 0 0\">广州市威盛软件有限公司</p><p style=\"font-size:260%; text-align:center; margin:20px 0 0 0\">" + df.format(new Date()) + "</p><br><br><br><br><br></div><div style=\"background-color:#F9F9F9\"><br><br><br><br><br><br><br></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">文档控制：</p><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">更改记录：</p><table class=\"table table-striped table-bordered \" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">日期</th><th width=\"25%\">作者</th><th width=\"25%\">职位</th><th width=\"25%\">版本</th></tr></thead><tbody><tr><td>" + df.format(new Date()) + "</td><td>" + s_doc_info[1] + "</td><td>" + s_doc_info[2] + "</td><td>" + s_doc_info[3] +  "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档审阅：</p><table class=\"table table-striped table-bordered\" style=\"width: 60%; margin: 0 0 80px 0\"><thead><tr><th width=\"25%\">姓名</th><th width=\"25%\">职位</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table><p style=\"font-size:150%; text-align:left; margin:30px 0 50px 0\">文档分发：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 650px 0\"><thead><tr><th width=\"25%\">接收单位</th><th width=\"25%\">姓名</th><th width=\"25%\">版本</th><th width=\"25%\">时间</th></tr></thead><tbody><tr><td>" + s_doc_info[0] + "</td><td><br></td><td>" + s_doc_info[3] + "</td><td>" + df.format(new Date()) + "</td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div></div><div class=\"container-customize\"><div style=\"background-color:#fff\"><br><br><br><br><br><br><br><br><br><p style=\"font-size:150%; text-align:right;\">" + s_doc_info[0] + "数据库巡检报告<hr></div><div class=\"table-responsive table-big1\"><p style=\"font-size:260%; text-align:left; margin:100px 0 50px 0\">设备列表：</p><table class=\"table table-striped table-bordered\" style=\"width: 70%; margin: 0 0 80px 0\"><thead><tr><th width=\"10%\">序号</th><th width=\"25%\">IP地址</th><th width=\"20%\">操作系统</th><th width=\"20%\">数据库软件</th><th width=\"25%\">数据库实例名</th></tr></thead><tbody>";
+
+    //循环生成设备列表
+    for(int cur = 0; cur < machine_count; cur++)
+    {
+      s_html_cover = s_html_cover + "<tr><td>" + Integer.toString(cur + 1) + "</td><td>" + s_host_info[ cur * 8 ] + "</td><td>" + s_host_info[ cur * 8 + 3 ] + "</td><td>" + s_host_info[ cur * 8 + 4 ] + " " + s_host_info[ cur * 8 + 5 ] + "</td><td>" + s_host_info[ cur * 8 + 7 ] + "</td></tr>";
+    }
+    if( machine_count <= 2 )
+    {
+      s_html_cover = s_html_cover + "<tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td><td><br></td><td><br></td></tr></tbody></table></div></div>";
+    }
+    else
+    {
+      s_html_cover = s_html_cover + "</tbody></table></div></div>";
     }
 
 
@@ -370,6 +356,8 @@ public class AutoCheck{
 
   public static String f_struct_body(String s_check_result_array[][], int i_section1, String s_os_type, String s_check_type, String s_host_ip, String s_db_system_info)
   {
+    //s_os_type,s_check_type,s_host_ip三个参数已经不再使用
+    
     BufferedReader b_reader = null;
     String s_return = null;
     String s_record = null;
@@ -406,11 +394,15 @@ public class AutoCheck{
     else if( s_db_system_info.indexOf("single") != -1 )
     {
       s_rac_or_single = "single";
-      s_node_ip = new String[1];
-      s_node_ip[0] = s_db_system_info.substring( 8, s_db_system_info.length() - 9).trim();
-      s_check_result = f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "check_result");
+      p = Pattern.compile("<single>\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}</single>");
+      m = p.matcher(s_db_system_info);
+      while( m.find() )
+      {
+        s_node_ip = new String[1];
+        s_node_ip[0] = s_db_system_info.substring( 8, s_db_system_info.length() - 9).trim();
+        s_check_result = f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "check_result");
+      }
     }
-
 
     //判断数据库类型
     if( f_ip_checkresult_map( s_node_ip[0], s_check_result_array, "db_type").equals("sqlserver") )
@@ -650,8 +642,13 @@ public class AutoCheck{
     }
     s_return = s_return + "</tbody></table></div><pre></pre><pre></pre>";
   }
+  if( s_return == null )
+  {
+    System.out.println("no value return from f_struct_body");
+    System.exit(5);
+  }
   return s_return;
-}
+  }
 
 public static String f_check(String s_tag, String s_line, String s_os_type)
 {
@@ -665,21 +662,23 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
   String s_format_string = null;
   int alert_count = 0;                      //oracle数据库实例告警日志数量
   int warning_count = 0;                    //vmstat, 同行数据中，警告替换位置需要加 warning*48
-  int usage = 0;                            //df文件系统使用率的百分比
   int i_col_num = 0;                        //用于正则表达式匹配时，区分不同列（不同指标值）
+  int usage = 0;                            //存放df文件系统使用率的百分比
   StringBuffer strbuff = null;              //Stringbuffer,用来构造字符串非常灵活，replace()能够选择起始和结束为止
 
   //各指标阀值
-  double d_free_warning = 1.1;                       //空闲内存百分比
-  int i_df_warning = 20;                             //文件系统使用率
-  int i_vmstat_waitp_warning = 25;                   //等待进程数
-  int i_vmstat_idle_warning = 95;                    //CPU空闲值
-  int i_vmstat_waitio_warning = 30;                  //io等待值
-  int i_vmstat_solaris_free_memory = 2048000;        //solaris下vmstat中的空闲内存
-  int i_tbs_usage_warning = 85;                      //表空间使用率百分比
-  int i_db_corruption_blocks = 0;                    //损坏文件块
-  float i_t5sql_exe_per_s = 0;                       //每次执行sql所需时间
-  double d_windows_df_warning = 0.15;                 //windows文件系统可用空间和总空间比率
+  double d_free_warning = 0.2;                       //空闲内存百分比，低于此值警告
+  int i_df_warning = 80;                             //文件系统使用率，高于此值警告
+  int i_vmstat_waitp_warning = 25;                   //等待进程数，高于此值警告
+  int i_vmstat_idle_warning = 30;                    //CPU空闲值，低于此值警告
+  int i_vmstat_waitio_warning = 20;                  //io等待值，高于此值警告
+  int i_vmstat_solaris_free_memory = 2048000;        //solaris下vmstat中的空闲内存，低于此值警告
+  int i_tbs_usage_warning = 80;                      //表空间使用率百分比，高于此值警告
+  int i_db_corruption_blocks = 0;                    //损坏文件块，高于此值警告
+  int i_win_free_warning = 2048;                     //windows下的内存使用量，低于此值警告
+  int i_win_cpu_warning = 80;                        //windows下的CPU使用量，高于此值警告
+  double d_t5sql_exe_per_s = 2.00;                   //每次执行sql所需时间，高于此值警告
+  double d_windows_df_warning = 0.20;                //windows文件系统可用空间和总空间比率，低于此值警告
 
   if( s_os_type.equals("linux") )
   {
@@ -693,7 +692,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
       {
         if( i_col_num == 0)
         {
-          if(Float.parseFloat(m.group(0)) >= i_t5sql_exe_per_s)
+          if(Float.parseFloat(m.group(0)) >= d_t5sql_exe_per_s)
           {
             strbuff.replace(m.start(), m.end(), s_red_prefix + m.group(0) + s_red_postfix);
           }
@@ -1066,7 +1065,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
       {
         if( i_col_num == 0)
         {
-          if(Float.parseFloat(m.group(0)) >= i_t5sql_exe_per_s)
+          if(Float.parseFloat(m.group(0)) >= d_t5sql_exe_per_s)
           {
             strbuff.replace(m.start(), m.end(), s_red_prefix + m.group(0) + s_red_postfix);
           }
@@ -1208,7 +1207,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
         {
           if( m.group(0).indexOf(",") != -1 )
           {
-            if( Integer.parseInt(m.group(0).substring(0, (m.group(0).length() - 3)).replace(",","")) < 2000  )
+            if( Integer.parseInt(m.group(0).substring(0, (m.group(0).length() - 3)).replace(",","")) < i_win_free_warning  )
             {
               s_return = s_line.replace(m.group(0), s_red_prefix + m.group(0) + s_red_postfix);
             }
@@ -1219,7 +1218,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
           }
           else
           {
-            if( Integer.parseInt(m.group(0).substring(0, m.group(0).length() - 3)) < 2000 )
+            if( Integer.parseInt(m.group(0).substring(0, m.group(0).length() - 3)) < i_win_free_warning )
             {
               s_return = s_line.replace(m.group(0), s_red_prefix + m.group(0) + s_red_postfix);
             }
@@ -1248,7 +1247,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
         }
         if( i_col_num == 1 )
         {
-          if( Double.parseDouble(s_temp) / Double.parseDouble(m.group(0)) <= d_windows_df_warning)
+          if( Double.parseDouble(s_temp) / Double.parseDouble(m.group(0)) <= d_windows_df_warning )
           {
             s_return = s_line.replace(s_temp, s_red_prefix + s_temp + s_red_postfix);
           }
@@ -1272,7 +1271,7 @@ public static String f_check(String s_tag, String s_line, String s_os_type)
       m = p.matcher(s_line);
       while( m.find() )
       {
-        if( Integer.parseInt(m.group(3)) >= 0 )
+        if( Integer.parseInt(m.group(3)) >= i_win_cpu_warning )
         {
           strbuff.replace(m.start(3), m.end(3), s_red_prefix + m.group(3) + s_red_postfix);
           s_return = strbuff.toString();
@@ -1435,6 +1434,11 @@ public static String f_item_record_map(String s_item)
     s_map = "undefined item!";
     break;
   };
+  if( s_map == null )
+  {
+    System.out.println("no value return from f_item_record_map");
+    System.exit(8);
+  }
   return s_map;
 }
 
@@ -1463,6 +1467,11 @@ public static String f_ip_checkresult_map(String ip, String s_check_result_array
         break;
       }
     }
+  }
+  if( re == null )
+  {
+    System.out.println("no value return from f_ip_checkresult_map");
+    System.exit(7);
   }
   return re;
 }
@@ -1497,15 +1506,22 @@ public static String f_search_log(String s_check_result, String s_tag)
     i_end = i_begin + i_length;
     s_return = s_check_result.substring(i_begin, i_end);
   }
+  if( s_return == null )
+  {
+    System.out.println("no value return from f_search_log");
+    System.exit(6);
+  }
   return s_return;
 }
 
 public static String f_write_file(String s_content,String s_filepath)
 {
+  //由于windows的默认字符集是gbk,读写文件时需要强制转换编码为utf-8
   try{
     File writename = new File(s_filepath);
     writename.createNewFile();
-    BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+    OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(writename),"UTF-8");
+    BufferedWriter out = new BufferedWriter(write);
     out.write(s_content);
     out.close();
     return "finish!";
@@ -1518,13 +1534,18 @@ public static String f_write_file(String s_content,String s_filepath)
 
 public static String f_read_file(String s_config_path)
 {
+
+  //由于windows的默认字符集是gbk,读写文件时需要强制转换编码为utf-8
   File filename = new File(s_config_path);
   String s_line = "";
   String s_return = null;
+
   BufferedReader bufferedReader = null;
+  InputStreamReader read = null;
   try
   {
-    bufferedReader = new BufferedReader(new FileReader(filename));
+    read = new InputStreamReader(new FileInputStream(filename),"UTF-8");
+    bufferedReader = new BufferedReader(read);
     while((s_line = bufferedReader.readLine()) != null)
     {
       if(s_return == null)
@@ -1542,6 +1563,11 @@ public static String f_read_file(String s_config_path)
   {
     e.printStackTrace();
     s_return = "read config file failure!";
+  }
+  if( s_return == null )
+  {
+    System.out.println("read config file error!");
+    System.exit(3);
   }
   return s_return;
 }
@@ -2009,6 +2035,7 @@ public static String f_rmt_shell(String ip, String username, String password, St
   if( re == null )
   {
     System.out.println("no value return from f_rmt_shell");
+    System.exit(2);
   }
   return re;
 }

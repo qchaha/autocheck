@@ -1,0 +1,17 @@
+.container-customize {
+  width: 100%;
+  padding-right: 150px;
+  padding-left: 150px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.btn-customize {
+  background-color: #ffffff;
+  border:1px #000000 solid;
+}
+
+.bg-color {
+  background-color: transparent;
+  border: none;
+}
